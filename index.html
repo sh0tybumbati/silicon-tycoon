@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Tycoon - Wafer Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="art-deco-header">
+            <div class="header-decoration top"></div>
+            <h1 class="game-title">SILICON TYCOON</h1>
+            <h2 class="subtitle">Wafer Planner</h2>
+            <div class="header-decoration bottom"></div>
+
+            <!-- Navigation Buttons -->
+            <nav class="screen-navigation">
+                <a href="architecture.html" style="text-decoration: none;">
+                    <button class="nav-button" data-screen="architecture">
+                        <span class="nav-icon">📐</span>
+                        <span class="nav-label">ARCHITECTURE</span>
+                    </button>
+                </a>
+                <button class="nav-button active" data-screen="wafer">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">WAFER</span>
+                </button>
+                <button class="nav-button" data-screen="binning" disabled>
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">BINNING</span>
+                </button>
+                <button class="nav-button" data-screen="packaging" disabled>
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-label">PACKAGING</span>
+                </button>
+                <button class="nav-button" data-screen="fab" disabled>
+                    <span class="nav-icon">🏭</span>
+                    <span class="nav-label">FAB</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Control Panel -->
+            <aside class="control-panel">
+                <div class="panel-frame">
+                    <div class="panel-header">
+                        <div class="chevron-divider"></div>
+                        <h3>FABRICATION PARAMETERS</h3>
+                        <div class="chevron-divider"></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="wafer-size">Wafer Diameter</label>
+                        <select id="wafer-size" class="art-deco-select">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="process-node">Process Node</label>
+                        <select id="process-node" class="art-deco-select">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="process-maturity">
+                            Process Maturity
+                            <span class="maturity-value" id="maturity-display">50%</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" id="process-maturity" class="art-deco-slider"
+                                   min="0" max="100" value="50" step="1">
+                            <div class="slider-track"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel-header">
+                        <div class="chevron-divider"></div>
+                        <h3>DIE SPECIFICATIONS</h3>
+                        <div class="chevron-divider"></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="reticle-size">Reticle / Stepper Field</label>
+                        <select id="reticle-size" class="art-deco-select">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="die-width">Die Width (mm)</label>
+                        <input type="number" id="die-width" class="art-deco-input"
+                               value="10" min="1" max="100" step="0.1">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="die-height">Die Height (mm)</label>
+                        <input type="number" id="die-height" class="art-deco-input"
+                               value="10" min="1" max="100" step="0.1">
+                    </div>
+
+                    <button id="calculate-btn" class="art-deco-button">
+                        <span class="button-text">CALCULATE YIELD</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="canvas-area">
+                <div class="canvas-frame">
+                    <div id="pixi-container"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Stats Panel -->
+        <footer class="stats-panel">
+            <div class="stats-frame">
+                <div class="stat-group">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Dies</span>
+                        <span class="stat-value" id="total-dies">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Transistors/Die</span>
+                        <span class="stat-value" id="transistors-per-die">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Overall Yield</span>
+                        <span class="stat-value" id="overall-yield">0%</span>
+                    </div>
+                </div>
+
+                <div class="yield-breakdown">
+                    <div class="chevron-divider"></div>
+                    <h4>YIELD BREAKDOWN</h4>
+                    <div class="chevron-divider"></div>
+
+                    <div class="yield-categories">
+                        <div class="yield-item">
+                            <div class="color-indicator perfect"></div>
+                            <span class="yield-label">Perfect</span>
+                            <span class="yield-count" id="perfect-count">0</span>
+                            <span class="yield-percent" id="perfect-percent">(0%)</span>
+                        </div>
+                        <div class="yield-item">
+                            <div class="color-indicator diminished"></div>
+                            <span class="yield-label">Diminished</span>
+                            <span class="yield-count" id="diminished-count">0</span>
+                            <span class="yield-percent" id="diminished-percent">(0%)</span>
+                        </div>
+                        <div class="yield-item">
+                            <div class="color-indicator damaged"></div>
+                            <span class="yield-label">Damaged</span>
+                            <span class="yield-count" id="damaged-count">0</span>
+                            <span class="yield-percent" id="damaged-percent">(0%)</span>
+                        </div>
+                        <div class="yield-item">
+                            <div class="color-indicator unusable"></div>
+                            <span class="yield-label">Unusable</span>
+                            <span class="yield-count" id="unusable-count">0</span>
+                            <span class="yield-percent" id="unusable-percent">(0%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Load PixiJS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.3.2/dist/pixi.min.js"></script>
+
+    <!-- Load our modules -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+# Silicon Tycoon
+
+A realistic semiconductor design and manufacturing simulation game.
+
+## Overview
+
+Silicon Tycoon lets you design custom silicon dies (CPUs, GPUs, memory, etc.), simulate realistic manufacturing processes, and manage a semiconductor company. The game features simulation-level realism based on real-world semiconductor physics and industry data.
+
+## Features
+
+### ✅ Currently Implemented
+
+- **Die Designer**: Visual canvas-based die layout tool with PixiJS
+- **Component Library**: CPU cores, GPU SMs, cache, memory controllers, I/O, power management
+- **Process Nodes**: 180nm to 3nm with realistic transistor densities
+- **Performance Simulation**: Clock speeds, IPC, performance scoring
+- **Power Modeling**: Dynamic power + leakage with thermal throttling
+- **Layout Optimization**: Interconnect penalties, clustering bonuses, bandwidth analysis
+- **Chip Classification**: Two-axis system (CLASS: Low-Power to Halo, GRADE: Consumer to Military)
+- **Manufacturing Yield**: Murphy's Law based yield calculation
+
+### 🔄 In Development
+
+- **Wafer Planning**: Create batch plans, calculate dies per wafer
+- **Fabrication**: Multi-stage fab lines with equipment slots
+- **Binning**: Component-specific defect distribution and SKU creation
+- **Packaging**: Product naming, chiplet designs, socket configuration
+
+### Art Deco Design
+- Teal and magenta color scheme
+- Geometric patterns and beveled edges
+- Retro-futuristic aesthetic
+- Responsive layout
+
+## Getting Started
+
+1. Open `architecture.html` in a modern web browser
+2. Click "CREATE NEW DIE" to start designing
+3. Select a process node and add components to the canvas
+4. Review performance metrics in the properties panel
+5. Save your designs to the die library
+
+### Optional: Local Web Server
+
+If you encounter CORS issues with ES6 modules:
+
+```bash
+# Using Python
+cd "Silicon Tycoon"
+python -m http.server 8000
+
+# Using Node.js
+npx http-server -p 8000
+```
+
+Then open: http://localhost:8000/architecture.html
+
+## Technology Stack
+
+- **Frontend**: HTML5, CSS3, JavaScript (ES6 Modules)
+- **Rendering**: PixiJS 7.3.2 for WebGL canvas
+- **Storage**: Browser localStorage with auto-recovery
+- **Design**: Art Deco themed UI
+- **Fonts**: Poiret One & Montserrat from Google Fonts
+
+## Project Structure
+
+```
+Silicon Tycoon/
+├── architecture.html          # Die designer (main screen)
+├── css/
+│   ├── style.css             # Global Art Deco theme
+│   └── architecture.css      # Designer-specific styles
+├── js/
+│   ├── constants.js          # Process nodes, densities, power tables
+│   ├── dieLibrary.js         # Die data management
+│   ├── dieDesigner.js        # PixiJS canvas controller
+│   └── architecture.js       # Main app + performance engine
+├── PLANNING.md               # Detailed design document
+└── README.md                 # This file
+```
+
+## Development
+
+No build process required - just open the HTML files in a browser. The game uses ES6 modules loaded directly by the browser.
+
+### Key Files
+
+- `js/constants.js` - Industry data and simulation parameters
+- `js/architecture.js` - Performance calculation engine
+- `js/dieDesigner.js` - Canvas interaction and rendering
+- `PLANNING.md` - Detailed feature specifications
+
+## Roadmap
+
+See `PLANNING.md` for the complete implementation roadmap.
+
+**Phase 1**: Wafer Planning (Next)
+**Phase 2**: Fabrication Lines
+**Phase 3**: Binning & SKU Creation
+**Phase 4**: Packaging & Products
+**Phase 5**: Market & Economics
+
+## License
+
+All rights reserved.
+
+## Version
+
+Current: v19 (Architecture phase complete)
+
+---
+
+**Last Updated**: 2025-10-24
