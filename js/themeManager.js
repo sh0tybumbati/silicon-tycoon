@@ -120,17 +120,20 @@ function applyTheme(theme) {
         if (stylesheet) stylesheet.disabled = true;
     });
 
-    // Remove any existing theme attribute
+    // Remove any existing theme attribute and classes
     document.body.removeAttribute('data-theme');
+    document.body.classList.remove('theme-vanilla', 'theme-deco');
 
     // Apply the selected theme
     if (theme === THEMES.VANILLA) {
         // Vanilla is now the base theme (no data-theme attribute or stylesheet needed)
-        // Just ensure all theme stylesheets are disabled (already done above)
+        // Add class to distinguish from CyberDeco
+        document.body.classList.add('theme-vanilla');
     } else if (theme === THEMES.DECO && stylesheets[THEMES.DECO]) {
         // CyberDeco theme overlay - uses body:not([data-theme]) selector
-        // No data-theme attribute, but enable the stylesheet
+        // No data-theme attribute, but enable the stylesheet and add class
         stylesheets[THEMES.DECO].disabled = false;
+        document.body.classList.add('theme-deco');
     } else if (theme === THEMES.RETRO && stylesheets[THEMES.RETRO]) {
         document.body.setAttribute('data-theme', 'retro');
         stylesheets[THEMES.RETRO].disabled = false;

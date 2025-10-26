@@ -81,6 +81,7 @@ body[data-theme="apple2"] .theme-brush-btn:hover {
     width: 200px;
     height: 200px;
     pointer-events: none;
+    background: transparent; /* No background by default */
 }
 
 .theme-wheel.open {
@@ -328,48 +329,51 @@ body[data-theme="apple2"] .theme-wheel-btn::before {
 
 /* ==================== VANILLA THEME OVERRIDES ==================== */
 
-/* Vanilla theme applies when NO data-theme attribute is set AND no other theme stylesheet is active */
-/* This targets the default state (vanilla theme) */
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-brush-btn {
+/* Vanilla theme - uses .theme-vanilla class */
+body.theme-vanilla .theme-brush-btn {
     background: linear-gradient(135deg, #4A90E2, #5C6BC0);
     border: 2px solid #4A90E2;
     box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
 }
 
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-brush-btn:hover {
+body.theme-vanilla .theme-brush-btn:hover {
     box-shadow: 0 4px 10px rgba(74, 144, 226, 0.4);
     transform: scale(1.1) rotate(5deg);
 }
 
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-wheel {
-    background: #FFFFFF;
-    border: 1px solid #CFD8DC;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-}
-
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-wheel-btn {
+body.theme-vanilla .theme-wheel-btn {
     background: #F5F5F5;
     border: 2px solid #E0E0E0;
 }
 
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-wheel-btn:hover:not(.theme-locked) {
+body.theme-vanilla .theme-wheel-btn:hover:not(.theme-locked) {
     background: #E3F2FD;
     border-color: #4A90E2;
     box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
 }
 
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-wheel-btn.active {
+body.theme-vanilla .theme-wheel-btn.active {
     background: linear-gradient(135deg, #BBDEFB, #90CAF9);
     border-color: #1976D2;
     box-shadow: 0 0 15px rgba(25, 118, 210, 0.5);
 }
 
-body:not([data-theme]):not(.theme-deco-active):not(.theme-retro-active):not(.theme-apple2-active) .theme-wheel-btn.theme-locked {
+body.theme-vanilla .theme-wheel-btn.theme-locked {
     background: #E0E0E0;
     border-color: #BDBDBD;
     color: #9E9E9E;
     box-shadow: none;
+}
+
+/* ==================== CYBERDECO THEME OVERRIDES ==================== */
+
+/* CyberDeco theme - uses .theme-deco class (default neon styling already applies) */
+body.theme-deco .theme-brush-btn {
+    /* Keep default CyberDeco styling from base rules */
+}
+
+body.theme-deco .theme-wheel-btn {
+    /* Keep default CyberDeco styling from base rules */
 }
 
 /* ==================== RESPONSIVE ==================== */
