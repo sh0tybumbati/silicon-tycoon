@@ -26,11 +26,12 @@ Silicon Tycoon lets you design custom silicon dies (CPUs, GPUs, memory, etc.), s
 - **Binning**: Component-specific defect distribution and SKU creation
 - **Packaging**: Product naming, chiplet designs, socket configuration
 
-### Art Deco Design
-- Teal and magenta color scheme
-- Geometric patterns and beveled edges
-- Retro-futuristic aesthetic
-- Responsive layout
+### Visual Themes
+- **Modern (Default)**: Clean, professional flat design with soft colors
+- **CyberDeco**: Neon cyberpunk aesthetic with teal/magenta colors and geometric patterns
+- **TVA**: Retro 60s-70s warm orange/brown palette with rounded corners
+- **Apple II**: Vintage computer terminal with green phosphor display
+- Fully responsive mobile-optimized layout
 
 ## Getting Started
 
@@ -60,8 +61,9 @@ Then open: http://localhost:8000/architecture.html
 - **Frontend**: HTML5, CSS3, JavaScript (ES6 Modules)
 - **Rendering**: PixiJS 7.3.2 for WebGL canvas
 - **Storage**: Browser localStorage with auto-recovery
-- **Design**: Art Deco themed UI
+- **Design**: Multiple theme options (Modern, CyberDeco, Retro, Apple II)
 - **Fonts**: Poiret One & Montserrat from Google Fonts
+- **Mobile**: Fully responsive with touch-optimized controls
 
 ## Documentation
 
@@ -79,9 +81,12 @@ Silicon Tycoon/
 ├── architecture.html         # Die designer screen
 ├── wafer.html                # Wafer planning screen
 ├── css/
-│   ├── style.css             # Global Art Deco theme
-│   ├── theme-retro.css       # Retro 60s-70s theme
-│   └── architecture.css      # Designer-specific styles
+│   ├── style.css             # Base styles (Modern/Vanilla theme)
+│   ├── theme-deco.css        # CyberDeco cyberpunk theme
+│   ├── theme-retro.css       # Retro 60s-70s TVA theme
+│   ├── theme-apple2.css      # Apple II vintage terminal theme
+│   ├── theme-selector.css    # Radial theme picker widget
+│   └── architecture.css      # Die designer specific styles
 ├── js/
 │   ├── constants.js          # Process nodes, densities, power tables
 │   ├── dieLibrary.js         # Die data management
@@ -126,8 +131,8 @@ All rights reserved.
 
 ## Version
 
-Current: v0.2.0 Alpha (Architecture complete, Wafer Planning 50% complete)
+Current: v0.3.0 Alpha (Architecture complete, Wafer Planning 50%, Theme system with 4 themes)
 
 ---
 
-**Last Updated**: 2025-10-26
+**Last Updated**: 2025-10-27

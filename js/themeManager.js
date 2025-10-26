@@ -8,12 +8,18 @@ const THEME_KEY = 'silicon-tycoon-theme';
 const UNLOCK_KEY = 'silicon-tycoon-theme-unlocks';
 
 const THEMES = {
+    VANILLA: 'vanilla',
     DECO: 'deco',
     RETRO: 'retro',
     APPLE2: 'apple2'
 };
 
 const THEME_CONFIG = {
+    [THEMES.VANILLA]: {
+        name: 'Modern',
+        icon: '📊',
+        defaultUnlocked: true
+    },
     [THEMES.DECO]: {
         name: 'CyberDeco',
         icon: '💎',
@@ -31,7 +37,7 @@ const THEME_CONFIG = {
     }
 };
 
-let currentTheme = THEMES.DECO;
+let currentTheme = THEMES.VANILLA;
 let themeUnlocks = {};
 let stylesheets = {};
 let wheelOpen = false;
@@ -47,6 +53,7 @@ export function initTheme() {
 
     // Get references to theme stylesheets
     stylesheets = {
+        [THEMES.DECO]: document.getElementById('theme-deco-css'),
         [THEMES.RETRO]: document.getElementById('theme-retro-css'),
         [THEMES.APPLE2]: document.getElementById('theme-apple2-css')
     };
@@ -62,6 +69,20 @@ export function initTheme() {
     const savedUnlocks = localStorage.getItem(UNLOCK_KEY);
     if (savedUnlocks) {
         themeUnlocks = JSON.parse(savedUnlocks);
+
+        // Merge with defaults for any new themes that were added
+        let needsSave = false;
+        Object.entries(THEME_CONFIG).forEach(([theme, config]) => {
+            if (themeUnlocks[theme] === undefined) {
+                themeUnlocks[theme] = config.defaultUnlocked;
+                needsSave = true;
+                console.log('[ThemeManager] New theme detected, setting default unlock:', theme);
+            }
+        });
+
+        if (needsSave) {
+            saveUnlocks();
+        }
     } else {
         // Set default unlocks
         Object.entries(THEME_CONFIG).forEach(([theme, config]) => {
@@ -70,14 +91,14 @@ export function initTheme() {
         saveUnlocks();
     }
 
-    // Load saved theme preference or default to Art Deco
-    const savedTheme = localStorage.getItem(THEME_KEY) || THEMES.DECO;
+    // Load saved theme preference or default to Vanilla
+    const savedTheme = localStorage.getItem(THEME_KEY) || THEMES.VANILLA;
 
     // Validate saved theme is unlocked
     if (isThemeUnlocked(savedTheme)) {
         currentTheme = savedTheme;
     } else {
-        currentTheme = THEMES.DECO;
+        currentTheme = THEMES.VANILLA;
     }
 
     // Apply theme
@@ -89,7 +110,7 @@ export function initTheme() {
 
 /**
  * Apply a specific theme
- * @param {string} theme - 'deco', 'retro', or 'apple2'
+ * @param {string} theme - 'vanilla', 'deco', 'retro', or 'apple2'
  */
 function applyTheme(theme) {
     console.log('[ThemeManager] Applying theme:', theme);
@@ -103,9 +124,13 @@ function applyTheme(theme) {
     document.body.removeAttribute('data-theme');
 
     // Apply the selected theme
-    if (theme === THEMES.DECO) {
-        // Art Deco is the default (no stylesheet or data attribute needed)
+    if (theme === THEMES.VANILLA) {
+        // Vanilla is now the base theme (no data-theme attribute or stylesheet needed)
         // Just ensure all theme stylesheets are disabled (already done above)
+    } else if (theme === THEMES.DECO && stylesheets[THEMES.DECO]) {
+        // CyberDeco theme overlay - uses body:not([data-theme]) selector
+        // No data-theme attribute, but enable the stylesheet
+        stylesheets[THEMES.DECO].disabled = false;
     } else if (theme === THEMES.RETRO && stylesheets[THEMES.RETRO]) {
         document.body.setAttribute('data-theme', 'retro');
         stylesheets[THEMES.RETRO].disabled = false;
