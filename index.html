@@ -3,182 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Silicon Tycoon - Wafer Planner</title>
+    <title>Silicon Tycoon</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link id="theme-retro-css" rel="stylesheet" href="css/theme-retro.css" disabled>
+    <link id="theme-apple2-css" rel="stylesheet" href="css/theme-apple2.css" disabled>
+    <link rel="stylesheet" href="css/theme-selector.css">
+    <style>
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .main-menu {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .menu-button {
+            width: 100%;
+            padding: 20px 30px;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-button .icon {
+            font-size: 2rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .menu-button .label {
+            flex: 1;
+        }
+
+        .menu-button .description {
+            font-size: 0.75rem;
+            color: var(--teal-light);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        .save-info {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--teal-dark);
+            padding: 20px;
+            margin-bottom: 30px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .save-info h3 {
+            font-family: var(--font-display);
+            color: var(--gold);
+            margin-bottom: 15px;
+            letter-spacing: 0.2em;
+        }
+
+        .save-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 206, 209, 0.2);
+        }
+
+        .save-stat:last-child {
+            border-bottom: none;
+        }
+
+        .save-stat .label {
+            color: var(--teal-light);
+        }
+
+        .save-stat .value {
+            color: var(--cream);
+            font-weight: 600;
+        }
+
+        .version-info {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--teal-dark);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="art-deco-header">
-            <div class="header-decoration top"></div>
-            <h1 class="game-title">SILICON TYCOON</h1>
-            <h2 class="subtitle">Wafer Planner</h2>
-            <div class="header-decoration bottom"></div>
-
-            <!-- Navigation Buttons -->
-            <nav class="screen-navigation">
-                <a href="architecture.html" style="text-decoration: none;">
-                    <button class="nav-button" data-screen="architecture">
-                        <span class="nav-icon">📐</span>
-                        <span class="nav-label">ARCHITECTURE</span>
-                    </button>
-                </a>
-                <button class="nav-button active" data-screen="wafer">
-                    <span class="nav-icon">⚙️</span>
-                    <span class="nav-label">WAFER</span>
-                </button>
-                <button class="nav-button" data-screen="binning" disabled>
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-label">BINNING</span>
-                </button>
-                <button class="nav-button" data-screen="packaging" disabled>
-                    <span class="nav-icon">📦</span>
-                    <span class="nav-label">PACKAGING</span>
-                </button>
-                <button class="nav-button" data-screen="fab" disabled>
-                    <span class="nav-icon">🏭</span>
-                    <span class="nav-label">FAB</span>
-                </button>
-            </nav>
-        </header>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Left Control Panel -->
-            <aside class="control-panel">
-                <div class="panel-frame">
-                    <div class="panel-header">
-                        <div class="chevron-divider"></div>
-                        <h3>FABRICATION PARAMETERS</h3>
-                        <div class="chevron-divider"></div>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="wafer-size">Wafer Diameter</label>
-                        <select id="wafer-size" class="art-deco-select">
-                            <!-- Populated by JS -->
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="process-node">Process Node</label>
-                        <select id="process-node" class="art-deco-select">
-                            <!-- Populated by JS -->
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="process-maturity">
-                            Process Maturity
-                            <span class="maturity-value" id="maturity-display">50%</span>
-                        </label>
-                        <div class="slider-container">
-                            <input type="range" id="process-maturity" class="art-deco-slider"
-                                   min="0" max="100" value="50" step="1">
-                            <div class="slider-track"></div>
-                        </div>
-                    </div>
-
-                    <div class="panel-header">
-                        <div class="chevron-divider"></div>
-                        <h3>DIE SPECIFICATIONS</h3>
-                        <div class="chevron-divider"></div>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="reticle-size">Reticle / Stepper Field</label>
-                        <select id="reticle-size" class="art-deco-select">
-                            <!-- Populated by JS -->
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="die-width">Die Width (mm)</label>
-                        <input type="number" id="die-width" class="art-deco-input"
-                               value="10" min="1" max="100" step="0.1">
-                    </div>
-
-                    <div class="control-group">
-                        <label for="die-height">Die Height (mm)</label>
-                        <input type="number" id="die-height" class="art-deco-input"
-                               value="10" min="1" max="100" step="0.1">
-                    </div>
-
-                    <button id="calculate-btn" class="art-deco-button">
-                        <span class="button-text">CALCULATE YIELD</span>
-                    </button>
-                </div>
-            </aside>
-
-            <!-- Canvas Area -->
-            <main class="canvas-area">
-                <div class="canvas-frame">
-                    <div id="pixi-container"></div>
-                </div>
-            </main>
+    <div class="landing-container">
+        <!-- Radial Theme Selector -->
+        <div class="theme-selector-container">
+            <button id="theme-brush-btn" class="theme-brush-btn" title="Change Theme">🖌️</button>
+            <div id="theme-wheel" class="theme-wheel" style="display: none;">
+                <button class="theme-wheel-btn" data-theme="deco" title="CyberDeco">💎</button>
+                <button class="theme-wheel-btn" data-theme="retro" title="TVA">📼</button>
+                <button class="theme-wheel-btn" data-theme="apple2" title="Apple II">🖥️</button>
+            </div>
         </div>
 
-        <!-- Stats Panel -->
-        <footer class="stats-panel">
-            <div class="stats-frame">
-                <div class="stat-group">
-                    <div class="stat-item">
-                        <span class="stat-label">Total Dies</span>
-                        <span class="stat-value" id="total-dies">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Transistors/Die</span>
-                        <span class="stat-value" id="transistors-per-die">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Overall Yield</span>
-                        <span class="stat-value" id="overall-yield">0%</span>
-                    </div>
+        <header class="art-deco-header" style="margin-bottom: 40px;">
+            <div class="header-decoration top"></div>
+            <h1 class="game-title">SILICON TYCOON</h1>
+            <div class="header-decoration bottom"></div>
+            <h2 class="subtitle">Semiconductor Design & Manufacturing</h2>
+        </header>
+
+        <div class="main-menu">
+            <!-- Save Info (shown if save exists) -->
+            <div id="save-info" class="save-info" style="display: none;">
+                <h3>LAST SESSION</h3>
+                <div class="save-stat">
+                    <span class="label">Last Played:</span>
+                    <span class="value" id="last-played-date">Never</span>
                 </div>
-
-                <div class="yield-breakdown">
-                    <div class="chevron-divider"></div>
-                    <h4>YIELD BREAKDOWN</h4>
-                    <div class="chevron-divider"></div>
-
-                    <div class="yield-categories">
-                        <div class="yield-item">
-                            <div class="color-indicator perfect"></div>
-                            <span class="yield-label">Perfect</span>
-                            <span class="yield-count" id="perfect-count">0</span>
-                            <span class="yield-percent" id="perfect-percent">(0%)</span>
-                        </div>
-                        <div class="yield-item">
-                            <div class="color-indicator diminished"></div>
-                            <span class="yield-label">Diminished</span>
-                            <span class="yield-count" id="diminished-count">0</span>
-                            <span class="yield-percent" id="diminished-percent">(0%)</span>
-                        </div>
-                        <div class="yield-item">
-                            <div class="color-indicator damaged"></div>
-                            <span class="yield-label">Damaged</span>
-                            <span class="yield-count" id="damaged-count">0</span>
-                            <span class="yield-percent" id="damaged-percent">(0%)</span>
-                        </div>
-                        <div class="yield-item">
-                            <div class="color-indicator unusable"></div>
-                            <span class="yield-label">Unusable</span>
-                            <span class="yield-count" id="unusable-count">0</span>
-                            <span class="yield-percent" id="unusable-percent">(0%)</span>
-                        </div>
-                    </div>
+                <div class="save-stat">
+                    <span class="label">Dies Designed:</span>
+                    <span class="value" id="dies-count">0</span>
+                </div>
+                <div class="save-stat">
+                    <span class="label">Batch Plans:</span>
+                    <span class="value" id="batch-plans-count">0</span>
                 </div>
             </div>
-        </footer>
+
+            <!-- Menu Buttons -->
+            <button class="menu-button art-deco-button primary" id="continue-btn" style="display: none;">
+                <span class="icon">▶️</span>
+                <div class="label">
+                    <div>CONTINUE</div>
+                    <div class="description">Resume your last session</div>
+                </div>
+            </button>
+
+            <button class="menu-button art-deco-button primary" id="new-game-btn">
+                <span class="icon">🆕</span>
+                <div class="label">
+                    <div>NEW GAME</div>
+                    <div class="description">Start fresh with a clean slate</div>
+                </div>
+            </button>
+
+            <button class="menu-button art-deco-button secondary" id="load-game-btn" disabled>
+                <span class="icon">📂</span>
+                <div class="label">
+                    <div>LOAD GAME</div>
+                    <div class="description">Load from save slots (Coming Soon)</div>
+                </div>
+            </button>
+
+            <button class="menu-button art-deco-button secondary" id="settings-btn" disabled>
+                <span class="icon">⚙️</span>
+                <div class="label">
+                    <div>SETTINGS</div>
+                    <div class="description">Adjust game preferences (Coming Soon)</div>
+                </div>
+            </button>
+
+            <button class="menu-button art-deco-button secondary" id="about-btn">
+                <span class="icon">ℹ️</span>
+                <div class="label">
+                    <div>ABOUT</div>
+                    <div class="description">Credits and information</div>
+                </div>
+            </button>
+        </div>
+
+        <div class="version-info">
+            <div>Silicon Tycoon v0.2.0 Alpha</div>
+            <div style="margin-top: 5px;">Built with PixiJS • Powered by Physics</div>
+        </div>
     </div>
 
-    <!-- Load PixiJS from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.3.2/dist/pixi.min.js"></script>
+    <script type="module">
+        import { initTheme, setupThemeSelector } from './js/themeManager.js';
+        import { getDieLibrary } from './js/dieLibrary.js';
+        import { loadBatchPlans, getBatchPlans } from './js/batchPlanner.js';
 
-    <!-- Load our modules -->
-    <script type="module" src="js/main.js"></script>
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize theme
+            initTheme();
+            setupThemeSelector();
+
+            // Load game data
+            loadBatchPlans();
+
+            // Check if save exists
+            const dieLibrary = getDieLibrary();
+            const batchPlans = getBatchPlans();
+            const hasSave = dieLibrary.length > 0 || batchPlans.length > 0;
+
+            if (hasSave) {
+                // Show save info and continue button
+                document.getElementById('save-info').style.display = 'block';
+                document.getElementById('continue-btn').style.display = 'flex';
+
+                // Get last modified date
+                let lastDate = null;
+                dieLibrary.forEach(die => {
+                    const date = new Date(die.lastModified || die.createdDate);
+                    if (!lastDate || date > lastDate) lastDate = date;
+                });
+                batchPlans.forEach(bp => {
+                    const date = new Date(bp.lastModified || bp.createdDate);
+                    if (!lastDate || date > lastDate) lastDate = date;
+                });
+
+                // Update UI
+                document.getElementById('last-played-date').textContent = lastDate
+                    ? lastDate.toLocaleDateString() + ' ' + lastDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    : 'Unknown';
+                document.getElementById('dies-count').textContent = dieLibrary.length;
+                document.getElementById('batch-plans-count').textContent = batchPlans.length;
+            }
+
+            // Event handlers
+            document.getElementById('continue-btn').addEventListener('click', () => {
+                window.location.href = 'architecture.html';
+            });
+
+            document.getElementById('new-game-btn').addEventListener('click', () => {
+                if (hasSave) {
+                    const confirm = window.confirm(
+                        'Starting a new game will erase your current progress.\n\n' +
+                        'Are you sure you want to continue?'
+                    );
+                    if (!confirm) return;
+
+                    // Clear all localStorage
+                    localStorage.clear();
+                }
+                window.location.href = 'architecture.html';
+            });
+
+            document.getElementById('about-btn').addEventListener('click', () => {
+                alert(
+                    'SILICON TYCOON v0.2.0 Alpha\\n\\n' +
+                    'A semiconductor design and manufacturing simulation game.\\n\\n' +
+                    '🎮 Design custom dies with PixiJS canvas\\n' +
+                    '⚙️ Plan wafer fabrication batches\\n' +
+                    '🏭 Simulate realistic manufacturing yields\\n' +
+                    '📊 Bin and package your chips\\n\\n' +
+                    'Built with love for chip nerds by chip nerds.\\n\\n' +
+                    '© 2025 Silicon Tycoon Project'
+                );
+            });
+        });
+    </script>
 </body>
 </html>

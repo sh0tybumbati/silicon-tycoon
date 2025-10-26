@@ -2,10 +2,44 @@
 
 import { COMPONENT_TYPES } from './dieLibrary.js';
 
+/**
+ * Get theme colors from CSS variables
+ */
+function getThemeColors() {
+    const styles = getComputedStyle(document.documentElement);
+    const tealPrimary = styles.getPropertyValue('--teal-primary').trim();
+    const magentaPrimary = styles.getPropertyValue('--magenta-primary').trim();
+
+    // Convert CSS color to hex number for PixiJS
+    const cssToHex = (cssColor) => {
+        if (cssColor.startsWith('#')) {
+            return parseInt(cssColor.slice(1), 16);
+        }
+        // Handle named colors or rgb()
+        const temp = document.createElement('div');
+        temp.style.color = cssColor;
+        document.body.appendChild(temp);
+        const computed = getComputedStyle(temp).color;
+        document.body.removeChild(temp);
+
+        const match = computed.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (match) {
+            return (parseInt(match[1]) << 16) | (parseInt(match[2]) << 8) | parseInt(match[3]);
+        }
+        return 0x808080; // Grey fallback
+    };
+
+    return {
+        tealPrimary: cssToHex(tealPrimary),
+        magentaPrimary: cssToHex(magentaPrimary)
+    };
+}
+
 export class DieDesigner {
     constructor(containerElement) {
         console.log('[DieDesigner] Initializing with component drag support');
         this.container = containerElement;
+        this.themeColors = getThemeColors();
         this.app = null;
         this.viewport = null;
         this.gridGraphics = null;
@@ -14,6 +48,7 @@ export class DieDesigner {
 
         this.currentDie = null;
         this.selectedComponent = null;
+        this.selectedComponents = []; // For multi-select
         this.isDraggingComponent = false;
         this.componentDragStart = null;
         this.isResizingComponent = false;
@@ -39,8 +74,14 @@ export class DieDesigner {
         this.copyPreview = null; // Preview graphic for copy placement
 
         // Grid settings
-        this.gridSize = 1; // 1mm grid
-        this.pixelsPerMm = 20; // Scale factor
+        this.gridSize = 0.5; // 0.5mm grid (finer granularity)
+        this.pixelsPerMm = 30; // Scale factor (increased from 20 for crisper rendering)
+
+        // Listen for theme changes
+        window.addEventListener('themeChanged', () => {
+            console.log('[DieDesigner] Theme changed, refreshing colors');
+            this.refreshThemeColors();
+        });
 
         this.init();
     }
@@ -89,6 +130,7 @@ export class DieDesigner {
 
         // Setup interactions
         this.setupZoomPan();
+        this.setupKeyboardShortcuts();
 
         // Handle resize
         window.addEventListener('resize', () => this.handleResize());
@@ -215,6 +257,115 @@ export class DieDesigner {
     }
 
     /**
+     * Refresh theme colors (call when theme changes)
+     */
+    refreshThemeColors() {
+        this.themeColors = getThemeColors();
+        if (this.currentDie) {
+            this.loadDie(this.currentDie); // Redraw with new colors
+        }
+    }
+
+    /**
+     * Abbreviate component name to prevent overflow
+     * @param {string} name - Full component name
+     * @returns {string} Abbreviated name
+     */
+    abbreviateComponentName(name) {
+        // Extract number at end if present
+        const match = name.match(/^(.+?)\s+(\d+)$/);
+        const baseName = match ? match[1] : name;
+        const number = match ? match[2] : '';
+
+        // Abbreviation map
+        const abbreviations = {
+            'CPU Core': 'CPU C',
+            'L2 Cache': 'L2 C',
+            'L3 Cache': 'L3 C',
+            'Memory Controller': 'MC',
+            'Interconnect': 'IC',
+            'Power Management': 'PM',
+            'I/O Controller': 'I/O',
+            'Integrated GPU': 'iGPU',
+            'Streaming Multiprocessor': 'SM',
+            'Compute Unit': 'CU',
+            'Texture Unit': 'TEX',
+            'Display Engine': 'DISP',
+            'HBM Stack': 'HBM',
+            'GDDR Controller': 'GDDR'
+        };
+
+        const abbreviated = abbreviations[baseName] || baseName;
+        return number ? `${abbreviated} ${number}` : abbreviated;
+    }
+
+    /**
+     * Get default component size based on type and process node
+     * @param {string} componentType - Component type ID
+     * @returns {{width: number, height: number}} Default size in mm
+     */
+    getDefaultComponentSize(componentType) {
+        if (!this.currentDie) return { width: 5, height: 5 };
+
+        const processNode = this.currentDie.processNode || 14;
+
+        // Base sizes at 14nm (in mm) - realistic component sizes
+        const baseSizes = {
+            'cpu_core': { width: 3.0, height: 3.0 },        // ~9mm² per core
+            'l2_cache': { width: 2.5, height: 2.5 },        // ~6.25mm² cache block
+            'l3_cache': { width: 4.0, height: 4.0 },        // ~16mm² larger cache
+            'mem_ctrl': { width: 2.0, height: 1.5 },        // ~3mm² MC (FIXED KEY)
+            'interconnect': { width: 6.0, height: 1.0 },    // ~6mm² thin strip
+            'power_mgmt': { width: 1.5, height: 1.5 },      // ~2.25mm² small block (FIXED KEY)
+            'io_ctrl': { width: 2.5, height: 1.5 },         // ~3.75mm² (FIXED KEY)
+            'igpu': { width: 4.0, height: 3.0 },            // ~12mm² iGPU (FIXED KEY)
+            'gpu_sm': { width: 3.5, height: 3.5 },          // ~12.25mm² GPU SM/CU (FIXED KEY)
+            'texture_unit': { width: 2.0, height: 2.0 },    // ~4mm²
+            'display_engine': { width: 2.0, height: 2.0 },  // ~4mm²
+            'memory_array': { width: 6.0, height: 6.0 },    // ~36mm² memory array
+            'control_logic': { width: 2.0, height: 2.0 },   // ~4mm² control logic
+            'npu': { width: 3.0, height: 3.0 }              // ~9mm² NPU core
+        };
+
+        const baseSize = baseSizes[componentType] || { width: 3, height: 3 };
+
+        // Scale factor based on process node (inverse relationship)
+        // Smaller nodes = smaller components (more dense)
+        // 180nm is ~13x larger than 14nm, 7nm is ~0.5x size of 14nm
+        const nodeScaleFactors = {
+            10000: 70,   // 10μm - huge ancient chips
+            6000: 42,    // 6μm
+            3000: 21,    // 3μm
+            1500: 11,    // 1.5μm
+            1000: 7,     // 1μm
+            800: 5.5,    // 800nm
+            600: 4,      // 600nm
+            350: 2.5,    // 350nm
+            250: 1.8,    // 250nm
+            180: 1.3,    // 180nm
+            130: 1.0,    // 130nm - baseline
+            90: 0.85,    // 90nm
+            65: 0.7,     // 65nm
+            45: 0.6,     // 45nm
+            32: 0.5,     // 32nm
+            22: 0.45,    // 22nm
+            14: 0.4,     // 14nm - modern baseline
+            12: 0.38,    // 12nm
+            10: 0.35,    // 10nm
+            7: 0.3,      // 7nm
+            5: 0.25,     // 5nm
+            3: 0.2       // 3nm - very dense
+        };
+
+        const scaleFactor = nodeScaleFactors[processNode] || 1.0;
+
+        return {
+            width: Math.max(0.1, Math.round(baseSize.width * scaleFactor * 2) / 2), // Round to 0.5mm, min 0.1mm
+            height: Math.max(0.1, Math.round(baseSize.height * scaleFactor * 2) / 2)
+        };
+    }
+
+    /**
      * Draw grid
      */
     drawGrid() {
@@ -226,7 +377,7 @@ export class DieDesigner {
         const gridPx = this.gridSize * this.pixelsPerMm;
 
         // Major grid lines (every 5mm)
-        g.lineStyle(1, 0x00CED1, 0.2);
+        g.lineStyle(1, this.themeColors.tealPrimary, 0.2);
         for (let x = 0; x <= dieWidth; x += 5) {
             const xPx = x * this.pixelsPerMm;
             g.moveTo(xPx, 0);
@@ -239,7 +390,7 @@ export class DieDesigner {
         }
 
         // Minor grid lines (every 1mm)
-        g.lineStyle(1, 0x008B8B, 0.1);
+        g.lineStyle(1, this.themeColors.tealPrimary, 0.1);
         for (let x = 0; x <= dieWidth; x += this.gridSize) {
             const xPx = x * this.pixelsPerMm;
             g.moveTo(xPx, 0);
@@ -261,7 +412,7 @@ export class DieDesigner {
         const heightPx = this.currentDie.dimensions.height * this.pixelsPerMm;
 
         // Outline
-        g.lineStyle(3, 0xFF00FF, 1);
+        g.lineStyle(3, this.themeColors.magentaPrimary, 1);
         g.drawRect(0, 0, widthPx, heightPx);
 
         // Corner markers
@@ -330,31 +481,40 @@ export class DieDesigner {
         // Click to select and start drag
         graphics.on('pointerdown', (e) => {
             e.stopPropagation();
-            this.selectComponent(component, graphics);
 
-            // Start dragging the component
-            // Use original event coordinates for consistency with mousemove
+            // Get shift key state from original event
             const originalEvent = e.data.originalEvent;
-            const screenX = originalEvent.clientX || originalEvent.touches?.[0]?.clientX;
-            const screenY = originalEvent.clientY || originalEvent.touches?.[0]?.clientY;
+            const isShiftClick = originalEvent.shiftKey;
 
-            this.isDraggingComponent = true;
-            const pos = this.screenToMm(screenX, screenY);
-            this.componentDragStart = {
-                x: pos.x,
-                y: pos.y,
-                componentX: component.position.x,
-                componentY: component.position.y
-            };
+            this.selectComponent(component, graphics, isShiftClick);
+
+            // Start dragging the component (only if single select)
+            if (!isShiftClick) {
+                // Use original event coordinates for consistency with mousemove
+                const screenX = originalEvent.clientX || originalEvent.touches?.[0]?.clientX;
+                const screenY = originalEvent.clientY || originalEvent.touches?.[0]?.clientY;
+
+                this.isDraggingComponent = true;
+                const pos = this.screenToMm(screenX, screenY);
+                this.componentDragStart = {
+                    x: pos.x,
+                    y: pos.y,
+                    componentX: component.position.x,
+                    componentY: component.position.y
+                };
+            }
         });
 
-        // Label
-        const label = new PIXI.Text(component.name || typeInfo.label, {
+        // Label with high-resolution rendering for crisp text
+        const displayName = this.abbreviateComponentName(component.name || typeInfo.label);
+        const label = new PIXI.Text(displayName, {
             fontFamily: 'Montserrat, Arial',
-            fontSize: 10,
+            fontSize: 16,
             fill: 0xFFFFFF,
+            fontWeight: '600',
             wordWrap: true,
-            wordWrapWidth: widthPx - 4
+            wordWrapWidth: widthPx - 4,
+            resolution: window.devicePixelRatio * 2 // 2x super-sampling for crisp text
         });
         label.position.set(xPx + 2, yPx + 2);
         graphics.addChild(label);
@@ -364,19 +524,68 @@ export class DieDesigner {
 
     /**
      * Select component
+     * @param {Object} component - Component data
+     * @param {PIXI.Graphics} graphics - Component graphics object
+     * @param {boolean} multiSelect - If true, add to selection; if false, replace selection
      */
-    selectComponent(component, graphics) {
-        this.selectedComponent = { component, graphics };
+    selectComponent(component, graphics, multiSelect = false) {
+        if (!multiSelect) {
+            // Single select: clear previous selections first
+            this.deselectAll();
 
-        // Highlight
-        graphics.tint = 0xFFFF00;
+            this.selectedComponent = { component, graphics };
+            this.selectedComponents = [{ component, graphics }];
 
-        // Show resize handles
-        this.showResizeHandles(component);
+            // Highlight
+            graphics.tint = 0xFFFF00;
 
-        // Emit event for properties panel
-        if (this.onComponentSelected) {
-            this.onComponentSelected(component);
+            // Show resize handles for single selection only
+            this.showResizeHandles(component);
+
+            // Emit event for properties panel
+            if (this.onComponentSelected) {
+                this.onComponentSelected(component);
+            }
+        } else {
+            // Multi-select: toggle component in selection
+            const existingIndex = this.selectedComponents.findIndex(
+                sel => sel.component === component
+            );
+
+            if (existingIndex !== -1) {
+                // Already selected, deselect it
+                this.selectedComponents.splice(existingIndex, 1);
+                graphics.tint = 0xFFFFFF;
+
+                // Update primary selection
+                if (this.selectedComponents.length > 0) {
+                    this.selectedComponent = this.selectedComponents[this.selectedComponents.length - 1];
+                } else {
+                    this.selectedComponent = null;
+                    this.hideResizeHandles();
+                }
+            } else {
+                // Not selected, add to selection
+                this.selectedComponents.push({ component, graphics });
+                this.selectedComponent = { component, graphics };
+                graphics.tint = 0xFFFF00;
+            }
+
+            // Hide resize handles for multi-selection
+            if (this.selectedComponents.length > 1) {
+                this.hideResizeHandles();
+            } else if (this.selectedComponents.length === 1) {
+                this.showResizeHandles(this.selectedComponents[0].component);
+            }
+
+            // Emit event with multi-selection info
+            if (this.onComponentSelected) {
+                if (this.selectedComponents.length === 1) {
+                    this.onComponentSelected(this.selectedComponents[0].component);
+                } else if (this.selectedComponents.length > 1) {
+                    this.onComponentSelected(null, this.selectedComponents.map(s => s.component));
+                }
+            }
         }
     }
 
@@ -388,6 +597,7 @@ export class DieDesigner {
             child.tint = 0xFFFFFF;
         });
         this.selectedComponent = null;
+        this.selectedComponents = [];
 
         // Hide resize handles
         this.hideResizeHandles();
@@ -414,24 +624,34 @@ export class DieDesigner {
     }
 
     /**
-     * Remove selected component
+     * Remove selected component(s)
      */
     removeSelectedComponent() {
-        if (!this.selectedComponent) return;
+        if (this.selectedComponents.length === 0) return;
 
-        const componentType = this.selectedComponent.component.type;
-        const index = this.currentDie.components.indexOf(this.selectedComponent.component);
-        if (index !== -1) {
-            this.currentDie.components.splice(index, 1);
+        const affectedTypes = new Set();
 
-            // Renumber remaining components of the same type
-            this.renumberComponents(componentType);
-
-            this.render(true); // Preserve view when deleting
-
-            if (this.onDieModified) {
-                this.onDieModified(this.currentDie);
+        // Remove all selected components
+        this.selectedComponents.forEach(({ component }) => {
+            affectedTypes.add(component.type);
+            const index = this.currentDie.components.indexOf(component);
+            if (index !== -1) {
+                this.currentDie.components.splice(index, 1);
             }
+        });
+
+        // Renumber remaining components for each affected type
+        affectedTypes.forEach(type => {
+            this.renumberComponents(type);
+        });
+
+        // Clear selection
+        this.deselectAll();
+
+        this.render(true); // Preserve view when deleting
+
+        if (this.onDieModified) {
+            this.onDieModified(this.currentDie);
         }
     }
 
@@ -789,13 +1009,36 @@ export class DieDesigner {
         let viewportStart = { x: 0, y: 0 };
 
         this.app.view.addEventListener('mousedown', (e) => {
-            if (e.button === 0) {
+            // Middle mouse button always pans, regardless of mode
+            if (e.button === 1) {
+                e.preventDefault(); // Prevent middle-click default behavior (auto-scroll)
+                isPanning = true;
+                panStart = { x: e.clientX, y: e.clientY };
+                viewportStart = { x: this.viewport.x, y: this.viewport.y };
+                this.app.view.style.cursor = 'grabbing';
+            } else if (e.button === 0) {
                 if (this.currentTool === 'pan') {
                     // Start panning in pan mode
                     isPanning = true;
                     panStart = { x: e.clientX, y: e.clientY };
                     viewportStart = { x: this.viewport.x, y: this.viewport.y };
                     this.app.view.style.cursor = 'grabbing';
+                } else if (this.currentTool === 'select') {
+                    // Check if clicking on empty canvas (not on a component)
+                    // This will deselect all components if clicking blank space
+                    const rect = this.app.view.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    // Check if we hit any component
+                    const hit = this.componentsContainer.children.some(child => {
+                        return child.getBounds().contains(x, y);
+                    });
+
+                    // If not holding shift and didn't hit anything, deselect all
+                    if (!hit && !e.shiftKey) {
+                        this.deselectAll();
+                    }
                 } else if (this.currentTool === 'draw' && this.selectedComponentType) {
                     // Start drawing in draw mode
                     this.startDrawing(e);
@@ -808,7 +1051,13 @@ export class DieDesigner {
         });
 
         this.app.view.addEventListener('mousemove', (e) => {
-            if (this.currentTool === 'select') {
+            // Handle panning (works with middle mouse or pan mode)
+            if (isPanning) {
+                const dx = e.clientX - panStart.x;
+                const dy = e.clientY - panStart.y;
+                this.viewport.x = viewportStart.x + dx;
+                this.viewport.y = viewportStart.y + dy;
+            } else if (this.currentTool === 'select') {
                 if (this.isResizingComponent) {
                     // Resize component
                     this.updateComponentResize(e.clientX, e.clientY);
@@ -816,12 +1065,6 @@ export class DieDesigner {
                     // Drag component
                     this.updateComponentDrag(e.clientX, e.clientY);
                 }
-            } else if (this.currentTool === 'pan' && isPanning) {
-                // Pan canvas in pan mode
-                const dx = e.clientX - panStart.x;
-                const dy = e.clientY - panStart.y;
-                this.viewport.x = viewportStart.x + dx;
-                this.viewport.y = viewportStart.y + dy;
             } else if (this.currentTool === 'draw' && this.isDrawing) {
                 // Update draw preview
                 this.updateDrawPreview(e);
@@ -832,6 +1075,13 @@ export class DieDesigner {
         });
 
         this.app.view.addEventListener('mouseup', (e) => {
+            // Handle middle mouse release
+            if (e.button === 1 && isPanning) {
+                isPanning = false;
+                this.updateCursor();
+                return;
+            }
+
             if (this.currentTool === 'select') {
                 if (this.isResizingComponent) {
                     this.finishComponentResize();
@@ -1086,9 +1336,9 @@ export class DieDesigner {
         let width = Math.abs(endX - this.drawStartPos.x);
         let height = Math.abs(endY - this.drawStartPos.y);
 
-        // Minimum size of 1mm
-        width = Math.max(1, width);
-        height = Math.max(1, height);
+        // Minimum size of 0.1mm
+        width = Math.max(0.1, width);
+        height = Math.max(0.1, height);
 
         // Clamp to die bounds
         x = Math.max(0, Math.min(x, this.currentDie.dimensions.width - width));
@@ -1130,9 +1380,22 @@ export class DieDesigner {
         let width = Math.abs(endX - this.drawStartPos.x);
         let height = Math.abs(endY - this.drawStartPos.y);
 
-        // Minimum size of 1mm
-        width = Math.max(1, width);
-        height = Math.max(1, height);
+        // If user just clicked (didn't drag much), use default size
+        // Use 2mm threshold to account for grid snapping and small movements
+        if (width < 2.0 && height < 2.0) {
+            const defaultSize = this.getDefaultComponentSize(this.selectedComponentType.id);
+            width = defaultSize.width;
+            height = defaultSize.height;
+            // Center on click point
+            x = this.drawStartPos.x - width / 2;
+            y = this.drawStartPos.y - height / 2;
+            x = this.snapToGrid(x);
+            y = this.snapToGrid(y);
+        } else {
+            // User dragged - use drawn size
+            width = Math.max(0.1, width);
+            height = Math.max(0.1, height);
+        }
 
         // Clamp to die bounds
         x = Math.max(0, Math.min(x, this.currentDie.dimensions.width - width));
@@ -1204,9 +1467,9 @@ export class DieDesigner {
         let width = Math.abs(endX - this.drawStartPos.x);
         let height = Math.abs(endY - this.drawStartPos.y);
 
-        // Minimum size of 1mm
-        width = Math.max(1, width);
-        height = Math.max(1, height);
+        // Minimum size of 0.1mm
+        width = Math.max(0.1, width);
+        height = Math.max(0.1, height);
 
         // Clamp to die bounds
         x = Math.max(0, Math.min(x, this.currentDie.dimensions.width - width));
@@ -1250,9 +1513,22 @@ export class DieDesigner {
         let width = Math.abs(endX - this.drawStartPos.x);
         let height = Math.abs(endY - this.drawStartPos.y);
 
-        // Minimum size of 1mm
-        width = Math.max(1, width);
-        height = Math.max(1, height);
+        // If user just tapped (didn't drag much), use default size
+        // Use 2mm threshold to account for grid snapping and small movements
+        if (width < 2.0 && height < 2.0) {
+            const defaultSize = this.getDefaultComponentSize(this.selectedComponentType.id);
+            width = defaultSize.width;
+            height = defaultSize.height;
+            // Center on tap point
+            x = this.drawStartPos.x - width / 2;
+            y = this.drawStartPos.y - height / 2;
+            x = this.snapToGrid(x);
+            y = this.snapToGrid(y);
+        } else {
+            // User dragged - use drawn size
+            width = Math.max(0.1, width);
+            height = Math.max(0.1, height);
+        }
 
         // Clamp to die bounds
         x = Math.max(0, Math.min(x, this.currentDie.dimensions.width - width));
@@ -1458,8 +1734,8 @@ export class DieDesigner {
         newHeight = this.snapToGrid(newHeight);
 
         // Minimum size
-        newWidth = Math.max(1, newWidth);
-        newHeight = Math.max(1, newHeight);
+        newWidth = Math.max(0.1, newWidth);
+        newHeight = Math.max(0.1, newHeight);
 
         // Clamp to die bounds
         newX = Math.max(0, newX);
@@ -1475,6 +1751,9 @@ export class DieDesigner {
 
         // Re-render
         this.render(true);
+
+        // Update resize handles to follow the component
+        this.showResizeHandles(comp);
     }
 
     /**
@@ -1498,6 +1777,118 @@ export class DieDesigner {
      */
     snapToGrid(value) {
         return Math.round(value / this.gridSize) * this.gridSize;
+    }
+
+    /**
+     * Setup keyboard shortcuts
+     */
+    setupKeyboardShortcuts() {
+        window.addEventListener('keydown', (e) => {
+            // Ignore if typing in input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            // Ctrl+C - Copy selected component (only works with single selection)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                e.preventDefault();
+                if (this.selectedComponents.length === 1) {
+                    this.copySelectedComponent();
+                    console.log('[DieDesigner] Copied component via Ctrl+C');
+                } else if (this.selectedComponents.length > 1) {
+                    console.log('[DieDesigner] Cannot copy multiple components at once');
+                }
+            }
+
+            // Ctrl+V - Paste copied component at mouse position
+            else if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                e.preventDefault();
+                if (this.copiedComponent) {
+                    // We need mouse position - store it during mousemove
+                    if (this.lastMousePos) {
+                        const pos = this.screenToMm(this.lastMousePos.x, this.lastMousePos.y);
+
+                        // Snap to grid
+                        let x = this.snapToGrid(pos.x);
+                        let y = this.snapToGrid(pos.y);
+
+                        // Clamp to die boundaries
+                        x = Math.max(0, Math.min(x, this.currentDie.dimensions.width - this.copiedComponent.dimensions.width));
+                        y = Math.max(0, Math.min(y, this.currentDie.dimensions.height - this.copiedComponent.dimensions.height));
+
+                        // Check for overlap
+                        if (!this.checkOverlap(x, y, this.copiedComponent.dimensions.width, this.copiedComponent.dimensions.height)) {
+                            // Create new component
+                            const newComponent = {
+                                id: Date.now().toString(),
+                                type: this.copiedComponent.type,
+                                name: this.generateComponentName(this.copiedComponent.type),
+                                position: { x, y },
+                                dimensions: {
+                                    width: this.copiedComponent.dimensions.width,
+                                    height: this.copiedComponent.dimensions.height
+                                }
+                            };
+
+                            this.addComponent(newComponent);
+                            console.log('[DieDesigner] Pasted component via Ctrl+V at', x, y);
+                        } else {
+                            console.log('[DieDesigner] Cannot paste - overlaps existing component');
+                        }
+                    }
+                }
+            }
+
+            // Delete / Backspace - Remove selected component(s)
+            else if (e.key === 'Delete' || e.key === 'Backspace') {
+                e.preventDefault();
+                if (this.selectedComponents.length > 0) {
+                    const count = this.selectedComponents.length;
+                    this.removeSelectedComponent();
+                    console.log(`[DieDesigner] Deleted ${count} component(s) via Delete key`);
+                }
+            }
+
+            // Escape - Deselect component / cancel operation
+            else if (e.key === 'Escape') {
+                e.preventDefault();
+                if (this.selectedComponents.length > 0) {
+                    this.deselectAll();
+                    console.log('[DieDesigner] Deselected component(s) via Escape');
+                } else if (this.currentTool === 'draw' && this.isDrawing) {
+                    this.cancelDrawing();
+                    console.log('[DieDesigner] Cancelled drawing via Escape');
+                } else if (this.currentTool === 'copy') {
+                    this.copiedComponent = null;
+                    this.copyPreview.clear();
+                    this.setTool('select');
+                    if (this.onToolChanged) {
+                        this.onToolChanged('select');
+                    }
+                    console.log('[DieDesigner] Cancelled copy mode via Escape');
+                }
+            }
+        });
+
+        // Track mouse position for Ctrl+V
+        this.app.view.addEventListener('mousemove', (e) => {
+            this.lastMousePos = { x: e.clientX, y: e.clientY };
+        });
+    }
+
+    /**
+     * Deselect current component
+     */
+    deselectComponent() {
+        if (this.selectedComponent) {
+            this.selectedComponent = null;
+            this.hideResizeHandles();
+            this.render(true); // Re-render to remove selection highlight
+
+            if (this.onComponentSelected) {
+                this.onComponentSelected(null);
+            }
+        }
     }
 
     /**

@@ -16,6 +16,7 @@ import {
     CHIP_CLASSIFICATION_CRITERIA
 } from './constants.js';
 import { DieDesigner } from './dieDesigner.js';
+import { initTheme, setupThemeSelector } from './themeManager.js';
 
 class ArchitectureApp {
     constructor() {
@@ -46,6 +47,10 @@ class ArchitectureApp {
     init() {
         console.log('[ArchitectureApp] Running init()...');
         try {
+            // Initialize theme system first
+            initTheme();
+            setupThemeSelector();
+
             // Setup navigation
             this.setupNavigation();
 
@@ -494,6 +499,13 @@ class ArchitectureApp {
             this.designer.removeSelectedComponent();
         };
 
+        // Snap size selector
+        document.getElementById('snap-size').onchange = (e) => {
+            const snapSize = parseFloat(e.target.value);
+            this.designer.gridSize = snapSize;
+            console.log('[Architecture] Snap size changed to', snapSize, 'mm');
+        };
+
         // Set initial tool to select
         this.setActiveTool('select');
     }
@@ -524,14 +536,6 @@ class ArchitectureApp {
                 item.classList.remove('selected');
             });
         }
-    }
-
-    /**
-     * Update zoom display
-     */
-    updateZoomDisplay() {
-        const zoomPercent = Math.round(this.designer.zoomLevel * 100);
-        document.querySelector('.zoom-level').textContent = `${zoomPercent}%`;
     }
 
     /**
@@ -642,6 +646,105 @@ class ArchitectureApp {
     }
 
     /**
+     * Helper: Calculate size scaling factor for a component
+     * Default size = 1.0x performance, larger = bonus, smaller = penalty
+     */
+    calculateSizeScaling(component, processNode) {
+        // Import getDefaultComponentSize from designer
+        // For now, inline the same logic
+        const baseSizes = {
+            'cpu_core': { width: 3.0, height: 3.0 },
+            'l2_cache': { width: 2.5, height: 2.5 },
+            'l3_cache': { width: 4.0, height: 4.0 },
+            'mem_ctrl': { width: 2.0, height: 1.5 },
+            'interconnect': { width: 6.0, height: 1.0 },
+            'power_mgmt': { width: 1.5, height: 1.5 },
+            'io_ctrl': { width: 2.5, height: 1.5 },
+            'igpu': { width: 4.0, height: 3.0 },
+            'gpu_sm': { width: 3.5, height: 3.5 },
+            'texture_unit': { width: 2.0, height: 2.0 },
+            'display_engine': { width: 2.0, height: 2.0 },
+            'memory_array': { width: 6.0, height: 6.0 },
+            'control_logic': { width: 2.0, height: 2.0 },
+            'npu': { width: 3.0, height: 3.0 }
+        };
+
+        const nodeScaleFactors = {
+            10000: 70, 6000: 40, 3000: 20, 1500: 8, 1000: 3.5,
+            800: 2.5, 600: 2.0, 350: 1.5, 250: 1.2, 180: 1.3,
+            130: 1.0, 90: 0.8, 65: 0.6, 45: 0.5, 32: 0.45,
+            22: 0.42, 14: 0.4, 12: 0.38, 10: 0.35, 7: 0.3, 5: 0.25, 3: 0.2
+        };
+
+        const baseSize = baseSizes[component.type] || { width: 2.0, height: 2.0 };
+        const scaleFactor = nodeScaleFactors[processNode] || 1.0;
+
+        const defaultWidth = Math.max(1, Math.round(baseSize.width * scaleFactor * 2) / 2);
+        const defaultHeight = Math.max(1, Math.round(baseSize.height * scaleFactor * 2) / 2);
+        const defaultArea = defaultWidth * defaultHeight;
+
+        const actualArea = component.dimensions.width * component.dimensions.height;
+        const sizeRatio = actualArea / defaultArea;
+
+        // Different components scale differently
+        const scalingCurves = {
+            'cpu_core': {
+                // CPU cores: diminishing returns (sqrt scaling)
+                // 0.5x size = 0.71x perf, 2x size = 1.41x perf
+                scale: (ratio) => Math.pow(ratio, 0.5),
+                maxBonus: 1.5, // Cap at 150%
+                minPenalty: 0.6 // Floor at 60%
+            },
+            'l2_cache': {
+                // Cache: linear scaling (more cache = more hits)
+                // 0.5x size = 0.5x perf, 2x size = 2x perf
+                scale: (ratio) => ratio,
+                maxBonus: 2.0,
+                minPenalty: 0.5
+            },
+            'l3_cache': {
+                // Cache: linear scaling
+                scale: (ratio) => ratio,
+                maxBonus: 2.0,
+                minPenalty: 0.5
+            },
+            'mem_ctrl': {
+                // Memory controller: logarithmic (bandwidth saturates)
+                // 0.5x = 0.82x, 2x = 1.18x
+                scale: (ratio) => 0.8 + Math.log2(ratio) * 0.2,
+                maxBonus: 1.3,
+                minPenalty: 0.7
+            },
+            'gpu_sm': {
+                // GPU: square root (parallel units)
+                scale: (ratio) => Math.pow(ratio, 0.6),
+                maxBonus: 1.6,
+                minPenalty: 0.6
+            },
+            'npu': {
+                // NPU: square root
+                scale: (ratio) => Math.pow(ratio, 0.6),
+                maxBonus: 1.6,
+                minPenalty: 0.6
+            },
+            'interconnect': {
+                // Interconnect: minimal scaling (just wiring)
+                scale: (ratio) => 0.95 + Math.log2(ratio) * 0.05,
+                maxBonus: 1.1,
+                minPenalty: 0.9
+            }
+        };
+
+        const curve = scalingCurves[component.type] || scalingCurves['cpu_core'];
+        let scaling = curve.scale(sizeRatio);
+
+        // Apply caps
+        scaling = Math.max(curve.minPenalty, Math.min(curve.maxBonus, scaling));
+
+        return scaling;
+    }
+
+    /**
      * Helper: Calculate IPC (Instructions Per Cycle) based on architecture
      */
     calculateIPC(die) {
@@ -652,12 +755,25 @@ class ArchitectureApp {
         const l2Cache = components.filter(c => c.type === 'l2_cache');
         const l3Cache = components.filter(c => c.type === 'l3_cache');
 
-        const l2Area = l2Cache.reduce((sum, c) => sum + (c.dimensions.width * c.dimensions.height), 0);
-        const l3Area = l3Cache.reduce((sum, c) => sum + (c.dimensions.width * c.dimensions.height), 0);
+        // Calculate size-scaled cache performance
+        let l2EffectiveArea = 0;
+        let l3EffectiveArea = 0;
+
+        l2Cache.forEach(c => {
+            const area = c.dimensions.width * c.dimensions.height;
+            const scaling = this.calculateSizeScaling(c, die.processNode);
+            l2EffectiveArea += area * scaling; // Size * efficiency
+        });
+
+        l3Cache.forEach(c => {
+            const area = c.dimensions.width * c.dimensions.height;
+            const scaling = this.calculateSizeScaling(c, die.processNode);
+            l3EffectiveArea += area * scaling;
+        });
 
         // More cache = better IPC (up to a point)
-        const l2Bonus = Math.min(0.5, l2Area / 10 * 0.1); // +0.1 IPC per 10mm² L2
-        const l3Bonus = Math.min(0.3, l3Area / 50 * 0.1); // +0.1 IPC per 50mm² L3
+        const l2Bonus = Math.min(0.5, l2EffectiveArea / 10 * 0.1); // +0.1 IPC per 10mm² L2
+        const l3Bonus = Math.min(0.3, l3EffectiveArea / 50 * 0.1); // +0.1 IPC per 50mm² L3
 
         return baseIPC + l2Bonus + l3Bonus;
     }
@@ -779,24 +895,11 @@ class ArchitectureApp {
         // Get expected controller area for this node
         const expectedArea = EXPECTED_MEM_CTRL_AREA[closestNode] || 1.0;
 
-        // Calculate total bandwidth with area-based scaling
+        // Calculate total bandwidth with size-based scaling
         const totalMemBW = memControllers.reduce((sum, ctrl) => {
-            const actualArea = ctrl.dimensions.width * ctrl.dimensions.height;
-            const areaRatio = actualArea / expectedArea;
-
-            let bandwidthMultiplier;
-            if (areaRatio < 1.0) {
-                // Penalty for undersized controllers (budget chips)
-                // 0.5x area = 0.75x bandwidth (25% penalty)
-                bandwidthMultiplier = 0.5 + (areaRatio * 0.5);
-            } else {
-                // Bonus for oversized controllers (high-end chips)
-                // Square root scaling with diminishing returns
-                // 2x area = 1.25x bandwidth, 4x area = 1.43x bandwidth
-                bandwidthMultiplier = 1.0 + (Math.sqrt(areaRatio - 1.0) * 0.25);
-            }
-
-            return sum + (baseBW * bandwidthMultiplier);
+            // Use unified size scaling function
+            const sizeScaling = this.calculateSizeScaling(ctrl, die.processNode);
+            return sum + (baseBW * sizeScaling);
         }, 0);
 
         // Calculate demand (average workload, not peak)
@@ -848,23 +951,175 @@ class ArchitectureApp {
     }
 
     /**
-     * Helper: Estimate manufacturing yield
+     * Simulate defects on a die with area-based probability
+     * Returns which components are hit and whether defects are in blank space
+     */
+    simulateDefects(die, numSimulations = 1000) {
+        const totalArea = die.dimensions.width * die.dimensions.height;
+        const components = die.components || [];
+
+        // Calculate component areas
+        const componentAreas = components.map(c => ({
+            component: c,
+            area: c.dimensions.width * c.dimensions.height
+        }));
+
+        const totalComponentArea = componentAreas.reduce((sum, c) => sum + c.area, 0);
+        const blankArea = totalArea - totalComponentArea;
+
+        // Get defect density
+        const processNode = PROCESS_NODES.find(n => n.node === die.processNode) || PROCESS_NODES.find(n => n.node === 7);
+        const defectDensity = processNode.baseDefectDensity;
+        const areaCm2 = totalArea / 100; // convert mm² to cm²
+
+        // Expected number of defects per die (from Poisson distribution)
+        const expectedDefects = defectDensity * areaCm2;
+
+        // Run Monte Carlo simulation
+        let perfectDies = 0;
+        let binnableDies = 0; // Dies with defects only in blank space
+        let failedDies = 0;
+
+        for (let sim = 0; sim < numSimulations; sim++) {
+            // Generate number of defects for this die (Poisson approximation)
+            // For small lambda, we can use simple sampling
+            let numDefects = 0;
+            if (expectedDefects < 10) {
+                // Use inverse transform sampling for Poisson
+                const L = Math.exp(-expectedDefects);
+                let p = 1.0;
+                let k = 0;
+                do {
+                    k++;
+                    p *= Math.random();
+                } while (p > L);
+                numDefects = k - 1;
+            } else {
+                // For larger lambda, use normal approximation
+                numDefects = Math.max(0, Math.round(expectedDefects + Math.sqrt(expectedDefects) * this.randn()));
+            }
+
+            if (numDefects === 0) {
+                perfectDies++;
+                continue;
+            }
+
+            // Check where each defect lands
+            let hitComponent = false;
+            for (let d = 0; d < numDefects; d++) {
+                const randomArea = Math.random() * totalArea;
+
+                // Check if defect hits blank space
+                if (randomArea < blankArea) {
+                    // Defect in blank space - doesn't affect functionality
+                    continue;
+                }
+
+                // Check which component was hit
+                let cumulativeArea = blankArea;
+                for (const { component, area } of componentAreas) {
+                    cumulativeArea += area;
+                    if (randomArea < cumulativeArea) {
+                        hitComponent = true;
+                        break;
+                    }
+                }
+
+                if (hitComponent) break;
+            }
+
+            if (!hitComponent) {
+                // All defects hit blank space
+                binnableDies++;
+            } else {
+                // At least one component was hit
+                failedDies++;
+            }
+        }
+
+        return {
+            perfectDies,
+            binnableDies,
+            failedDies,
+            totalSimulations: numSimulations,
+            perfectYield: perfectDies / numSimulations,
+            effectiveYield: (perfectDies + binnableDies) / numSimulations,
+            expectedDefects,
+            blankAreaPercent: (blankArea / totalArea) * 100
+        };
+    }
+
+    /**
+     * Helper for normal distribution sampling (Box-Muller transform)
+     */
+    randn() {
+        let u = 0, v = 0;
+        while(u === 0) u = Math.random();
+        while(v === 0) v = Math.random();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+
+    /**
+     * Get theoretical yield estimate (for wafer planning)
+     * Returns expected values without running Monte Carlo simulation
+     */
+    estimateTheoreticalYield(die) {
+        const area = die.dimensions.width * die.dimensions.height;
+        const components = die.components || [];
+        const processNode = PROCESS_NODES.find(n => n.node === die.processNode) || PROCESS_NODES.find(n => n.node === 7);
+
+        // Calculate component areas
+        const totalComponentArea = components.reduce((sum, c) => {
+            return sum + (c.dimensions.width * c.dimensions.height);
+        }, 0);
+        const blankArea = area - totalComponentArea;
+        const blankAreaPercent = (blankArea / area) * 100;
+
+        // Expected number of defects per die (Poisson distribution mean)
+        const defectDensity = processNode.baseDefectDensity;
+        const areaCm2 = area / 100;
+        const expectedDefects = defectDensity * areaCm2;
+
+        // Theoretical yield using Murphy's Law with blank space factor
+        // Dies with defects in blank space can still be binned
+        const blankSpaceAbsorption = blankAreaPercent / 100; // Probability defect hits blank space
+        const baseYield = Math.exp(-expectedDefects);
+        const effectiveYield = baseYield + (1 - baseYield) * blankSpaceAbsorption * 0.5; // 50% of blank-hit defects salvageable
+
+        return {
+            yieldPercent: (effectiveYield * 100).toFixed(1),
+            yieldNumeric: effectiveYield,
+            costMultiplier: 1 / Math.max(0.3, effectiveYield),
+            perfectYield: (baseYield * 100).toFixed(1),
+            binnableYield: ((effectiveYield - baseYield) * 100).toFixed(1),
+            expectedDefects: expectedDefects.toFixed(2),
+            blankAreaPercent: blankAreaPercent.toFixed(1)
+        };
+    }
+
+    /**
+     * Helper: Estimate manufacturing yield using realistic defect simulation
+     * THIS IS FOR FABRICATION PHASE - runs actual Monte Carlo simulation
      */
     estimateYield(die) {
         const area = die.dimensions.width * die.dimensions.height;
         const processNode = PROCESS_NODES.find(n => n.node === die.processNode) || PROCESS_NODES.find(n => n.node === 7);
 
-        // Murphy's Law: Y = e^(-D × A)
-        // D = defect density (defects/cm²)
-        // A = die area (cm²)
-        const defectDensity = processNode.baseDefectDensity;
-        const areaCm2 = area / 100; // convert mm² to cm²
-        const yieldNumeric = Math.exp(-defectDensity * areaCm2);
+        // Run defect simulation (for die designer display)
+        const defectSim = this.simulateDefects(die, 1000);
+
+        // Use effective yield (includes dies with defects only in blank space)
+        const yieldNumeric = defectSim.effectiveYield;
 
         return {
             yieldPercent: (yieldNumeric * 100).toFixed(1),
             yieldNumeric: yieldNumeric,
-            costMultiplier: 1 / Math.max(0.3, yieldNumeric)
+            costMultiplier: 1 / Math.max(0.3, yieldNumeric),
+            // Additional details from simulation
+            perfectYield: (defectSim.perfectYield * 100).toFixed(1),
+            binnableYield: (defectSim.binnableDies / defectSim.totalSimulations * 100).toFixed(1),
+            expectedDefects: defectSim.expectedDefects.toFixed(2),
+            blankAreaPercent: defectSim.blankAreaPercent.toFixed(1)
         };
     }
 
@@ -882,22 +1137,55 @@ class ArchitectureApp {
         // Get leakage for this node
         const leakagePerMT = LEAKAGE_PER_M_TRANSISTORS[closestNode] || 2.2;
 
-        // Simplified but realistic dynamic power calculation
-        // Based on empirical data: ~10-20 watts per billion transistors at 1GHz at 7nm
-        // Scales with V² and frequency
-        const basePowerPerBTransistor = 15; // Watts per billion transistors at 1GHz, 0.75V
-        const voltageScaling = (voltage / 0.75) ** 2; // Quadratic with voltage
-        const frequencyScaling = baseClockGHz; // Linear with frequency
+        const components = die.components || [];
+        let totalDynamicPower = 0;
 
-        const dynamicPower = (totalTransistorsMillion / 1000) * basePowerPerBTransistor * voltageScaling * frequencyScaling;
+        // Calculate power per component type (different activity factors)
+        components.forEach(comp => {
+            const area = comp.dimensions.width * comp.dimensions.height;
+            const density = TRANSISTOR_DENSITY[die.processNode] || 60.1;
+            const multiplier = COMPONENT_DENSITY_MULTIPLIERS[comp.type] || 1.0;
+            const transistorsMillion = area * density * multiplier;
 
-        // Static power (leakage)
+            // Activity factor varies by component type
+            const activityFactors = {
+                'cpu_core': 0.30,        // 30% of transistors switching per cycle
+                'gpu_sm': 0.40,          // GPUs have higher utilization
+                'l2_cache': 0.15,        // Cache has lower activity
+                'l3_cache': 0.10,        // L3 even less active
+                'mem_ctrl': 0.25,        // Memory controllers moderate
+                'interconnect': 0.20,    // Interconnect moderate
+                'power_mgmt': 0.10,      // Power management low activity
+                'io_ctrl': 0.15,         // I/O moderate
+                'igpu': 0.35,            // Integrated GPU high activity
+                'texture_unit': 0.35,    // Texture units high activity
+                'display_engine': 0.20,  // Display moderate
+                'control_logic': 0.25,   // Control logic moderate
+                'npu': 0.45              // NPUs very high utilization
+            };
+
+            const activityFactor = activityFactors[comp.type] || 0.25;
+
+            // Dynamic power: C * V² * f * α (Capacitance * Voltage² * Frequency * Activity)
+            // Base: ~15W per billion transistors at 1GHz at 0.75V with 100% activity
+            // We scale by actual activity factor
+            const basePowerPerBTransistor = 15.0; // At 100% activity
+            const voltageScaling = (voltage / 0.75) ** 2;
+            const frequencyScaling = baseClockGHz;
+
+            const compDynamicPower = (transistorsMillion / 1000) * basePowerPerBTransistor *
+                                    voltageScaling * frequencyScaling * activityFactor;
+
+            totalDynamicPower += compDynamicPower;
+        });
+
+        // Static power (leakage) - affects all transistors regardless of activity
         const leakagePower = totalTransistorsMillion * leakagePerMT;
 
-        const totalTDP = dynamicPower + leakagePower;
+        const totalTDP = totalDynamicPower + leakagePower;
 
         return {
-            dynamicPower,
+            dynamicPower: totalDynamicPower,
             leakagePower,
             totalTDP,
             voltage
@@ -960,20 +1248,65 @@ class ArchitectureApp {
         const maxClockRatio = perf?.clockGHz && perf?.maxClock ? perf.clockGHz / perf.maxClock : 1.0;
 
         // Determine CLASS (performance tier based on cores + TDP)
-        let chipClass = 'Budget';
+        // Use scoring system to find best-fit classification
         const tdp = perf?.tdp || 0;
         const criteria = CHIP_CLASSIFICATION_CRITERIA.class;
+
+        let bestClass = 'Budget';
+        let bestScore = -Infinity;
 
         for (const [className, limits] of Object.entries(criteria)) {
             const [minCores, maxCores] = limits.cores;
             const [minTDP, maxTDP] = limits.tdp;
 
-            if ((cpuCores >= minCores && cpuCores <= maxCores) ||
-                (tdp >= minTDP && tdp <= maxTDP)) {
-                chipClass = className;
-                break;
+            // Calculate how well this chip fits each category
+            let score = 0;
+
+            // Core count scoring (weighted 2x - more important than TDP)
+            if (cpuCores >= minCores && cpuCores <= maxCores) {
+                // Perfect fit: chip is within range
+                const coreRange = maxCores - minCores;
+                const corePosition = (cpuCores - minCores) / coreRange;
+                score += 100; // Base score for being in range (doubled from 50)
+                // Bonus for being in middle of range (more typical)
+                score += (1.0 - Math.abs(corePosition - 0.5) * 2) * 50; // Doubled from 25
+            } else if (cpuCores > maxCores) {
+                // Exceeds range - strongly prefer higher tier
+                // Don't give partial credit, give strong penalty
+                const overage = (cpuCores - maxCores) / maxCores;
+                score -= overage * 50; // Changed to penalty
+            } else {
+                // Below range - strong penalty
+                const underage = (minCores - cpuCores) / Math.max(minCores, 1);
+                score -= underage * 60; // Increased penalty
+            }
+
+            // TDP scoring (secondary factor)
+            if (tdp >= minTDP && tdp <= maxTDP) {
+                // Perfect fit: chip is within range
+                const tdpRange = maxTDP - minTDP;
+                const tdpPosition = (tdp - minTDP) / tdpRange;
+                score += 50; // Base score for being in range
+                // Bonus for being in middle of range
+                score += (1.0 - Math.abs(tdpPosition - 0.5) * 2) * 25;
+            } else if (tdp > maxTDP) {
+                // Exceeds range - slight penalty
+                const overage = (tdp - maxTDP) / maxTDP;
+                score += 20 - (overage * 15);
+            } else {
+                // Below range - small penalty (low power is often good)
+                const underage = (minTDP - tdp) / Math.max(minTDP, 1);
+                score -= underage * 20; // Reduced penalty
+            }
+
+            // Track best fit
+            if (score > bestScore) {
+                bestScore = score;
+                bestClass = className;
             }
         }
+
+        const chipClass = bestClass;
 
         // Determine GRADE (market segment based on component ratios)
         let chipGrade = 'Consumer';
@@ -1033,11 +1366,33 @@ class ArchitectureApp {
         // Get maximum clock for this node
         const maxClock = MAX_CLOCK_BY_NODE[die.processNode] || 5.0;
 
-        // Apply penalties for core count (thermal limits)
-        const coreCountPenalty = Math.max(0.7, 1.0 - (cpuCores * 0.03)); // -3% per core after first
+        // Apply penalties for core count (power delivery, thermal spreading)
+        // Modern CPUs handle multi-core much better with improved power delivery
+        // Penalty is logarithmic, not linear
+        const coreCountPenalty = cpuCores > 0 ? Math.max(0.90, 1.0 - (Math.log2(cpuCores) * 0.02)) : 1.0;
 
-        // Calculate base clock after penalties
-        let baseClockGHz = maxClock * 0.85 * coreCountPenalty; // Base is 85% of max
+        // CPU core SIZE affects clock speed
+        // Larger cores can clock higher (more complex pipelines, better power delivery)
+        // Smaller cores clock lower (simpler, efficiency-focused)
+        const cpuCoreComponents = components.filter(c => c.type === 'cpu_core');
+        let avgCoreSizeScaling = 1.0;
+        if (cpuCoreComponents.length > 0) {
+            const totalScaling = cpuCoreComponents.reduce((sum, core) => {
+                return sum + this.calculateSizeScaling(core, die.processNode);
+            }, 0);
+            avgCoreSizeScaling = totalScaling / cpuCoreComponents.length;
+        }
+        // Convert scaling to clock bonus/penalty (0.6x size = 0.95x clock, 1.5x size = 1.05x clock)
+        const coreClockScaling = 0.90 + (avgCoreSizeScaling - 1.0) * 0.1;
+
+        // Layout efficiency affects achievable clocks
+        // Better interconnect layout = higher clocks
+        const interconnectQuality = this.calculateInterconnectPenalty(die);
+        const layoutClockBonus = Math.max(0.85, 1.0 - (interconnectQuality * 0.15));
+
+        // Calculate base clock with all factors
+        // Well-designed chips can reach 90-95% of max, poorly designed 85-90%
+        let baseClockGHz = maxClock * 0.90 * coreCountPenalty * layoutClockBonus * coreClockScaling;
 
         // Calculate power
         let powerMetrics = this.calculatePower(die, baseClockGHz, totalTransistors);
@@ -1276,7 +1631,13 @@ class ArchitectureApp {
             <div style="margin-bottom: 20px;">
                 <h5 style="color: var(--gold); margin-bottom: 10px;">MANUFACTURING</h5>
                 <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
-                    <div><span style="color: var(--teal-light);">Est. Yield:</span> <span style="color: ${parseFloat(perf.yieldPercent) >= 70 ? 'var(--teal-light)' : parseFloat(perf.yieldPercent) >= 50 ? 'var(--gold)' : 'var(--magenta-primary)'};">${perf.yieldPercent}%</span></div>
+                    <div><span style="color: var(--teal-light);">Effective Yield:</span> <span style="color: ${parseFloat(perf.yieldPercent) >= 70 ? 'var(--teal-light)' : parseFloat(perf.yieldPercent) >= 50 ? 'var(--gold)' : 'var(--magenta-primary)'};">${perf.yieldPercent}%</span></div>
+                    <div style="margin-left: 15px; font-size: 0.8rem;">
+                        <div><span style="color: var(--teal-light);">Perfect:</span> ${perf.perfectYield}%</div>
+                        <div><span style="color: var(--teal-light);">Binnable:</span> ${perf.binnableYield}%</div>
+                    </div>
+                    <div><span style="color: var(--teal-light);">Expected Defects/Die:</span> ${perf.expectedDefects}</div>
+                    <div><span style="color: var(--teal-light);">Blank Space:</span> ${perf.blankAreaPercent}%</div>
                     <div><span style="color: var(--teal-light);">Cost Multiplier:</span> ${perf.costMultiplier}x</div>
                 </div>
             </div>
@@ -1294,6 +1655,23 @@ class ArchitectureApp {
         const panel = document.getElementById('properties-content');
         const compType = COMPONENT_TYPES[component.type];
 
+        // Calculate size scaling information
+        const sizeScaling = this.calculateSizeScaling(component, this.currentDie.processNode);
+        const defaultSize = this.designer.getDefaultComponentSize(component.type);
+        const actualArea = component.dimensions.width * component.dimensions.height;
+        const defaultArea = defaultSize.width * defaultSize.height;
+        const sizeRatio = actualArea / defaultArea;
+
+        // Format scaling percentage
+        const scalingPercent = ((sizeScaling - 1.0) * 100).toFixed(1);
+        const scalingSign = sizeScaling >= 1.0 ? '+' : '';
+        const scalingColor = sizeScaling >= 1.0 ? 'var(--teal-light)' : 'var(--magenta-primary)';
+
+        // Format size ratio
+        const ratioPercent = ((sizeRatio - 1.0) * 100).toFixed(1);
+        const ratioSign = sizeRatio >= 1.0 ? '+' : '';
+        const ratioColor = sizeRatio >= 1.0 ? 'var(--teal-light)' : 'var(--gold)';
+
         panel.innerHTML = `
             <div style="margin-bottom: 20px;">
                 <h5 style="color: var(--gold); margin-bottom: 10px;">COMPONENT</h5>
@@ -1308,26 +1686,77 @@ class ArchitectureApp {
                     </div>
                     <div>
                         <label style="color: var(--teal-light); display: block; margin-bottom: 5px;">Width (mm)</label>
-                        <input type="number" value="${component.dimensions.width}" class="art-deco-input" style="width: 100%; padding: 8px;" step="0.1" id="comp-width">
+                        <input type="number" value="${component.dimensions.width}" class="art-deco-input" style="width: 100%; padding: 8px;" step="0.1" min="0.1" id="comp-width">
                     </div>
                     <div>
                         <label style="color: var(--teal-light); display: block; margin-bottom: 5px;">Height (mm)</label>
-                        <input type="number" value="${component.dimensions.height}" class="art-deco-input" style="width: 100%; padding: 8px;" step="0.1" id="comp-height">
+                        <input type="number" value="${component.dimensions.height}" class="art-deco-input" style="width: 100%; padding: 8px;" step="0.1" min="0.1" id="comp-height">
                     </div>
                     <div>
-                        <span style="color: var(--teal-light);">Area:</span> ${(component.dimensions.width * component.dimensions.height).toFixed(2)} mm²
+                        <span style="color: var(--teal-light);">Area:</span> ${actualArea.toFixed(2)} mm²
                     </div>
                 </div>
-                <button id="update-component" class="art-deco-button primary" style="margin-top: 15px; width: 100%;">UPDATE</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h5 style="color: var(--gold); margin-bottom: 10px;">SIZE SCALING</h5>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--teal-light);">Default Size:</span>
+                        <span>${defaultSize.width} × ${defaultSize.height} mm (${defaultArea.toFixed(1)} mm²)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--teal-light);">Size vs Default:</span>
+                        <span style="color: ${ratioColor}; font-weight: bold;">${sizeRatio.toFixed(2)}x (${ratioSign}${ratioPercent}%)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--teal-light);">Performance Scaling:</span>
+                        <span style="color: ${scalingColor}; font-weight: bold;">${sizeScaling.toFixed(2)}x (${scalingSign}${scalingPercent}%)</span>
+                    </div>
+                    <div style="padding: 8px; background: rgba(0, 206, 209, 0.1); border-left: 3px solid var(--teal-primary); font-size: 0.75rem; line-height: 1.4;">
+                        ${sizeRatio > 1.0 ?
+                            `Larger than standard: ${sizeRatio >= 1.5 ? 'High' : 'Moderate'} performance boost, uses more die space.` :
+                            sizeRatio < 1.0 ?
+                            `Smaller than standard: Reduced performance, saves die space.` :
+                            `Standard size: Baseline performance for this process node.`
+                        }
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <button id="update-component" class="art-deco-button primary" style="width: 100%;">UPDATE</button>
                 <button id="delete-component" class="art-deco-button secondary" style="margin-top: 10px; width: 100%;">DELETE</button>
             </div>
         `;
 
         // Update component button
         document.getElementById('update-component').onclick = () => {
-            component.name = document.getElementById('comp-name').value;
-            component.dimensions.width = parseFloat(document.getElementById('comp-width').value);
-            component.dimensions.height = parseFloat(document.getElementById('comp-height').value);
+            const newName = document.getElementById('comp-name').value;
+            const newWidth = parseFloat(document.getElementById('comp-width').value);
+            const newHeight = parseFloat(document.getElementById('comp-height').value);
+
+            // Validate dimensions
+            if (isNaN(newWidth) || newWidth < 0.1) {
+                alert('Width must be at least 0.1mm');
+                return;
+            }
+            if (isNaN(newHeight) || newHeight < 0.1) {
+                alert('Height must be at least 0.1mm');
+                return;
+            }
+
+            // Check if component would fit on die with new dimensions
+            const maxX = component.position.x + newWidth;
+            const maxY = component.position.y + newHeight;
+            if (maxX > this.currentDie.dimensions.width || maxY > this.currentDie.dimensions.height) {
+                alert(`Component would extend beyond die bounds (${this.currentDie.dimensions.width} × ${this.currentDie.dimensions.height} mm)`);
+                return;
+            }
+
+            // Update component
+            component.name = newName;
+            component.dimensions.width = newWidth;
+            component.dimensions.height = newHeight;
+
             this.designer.render(true); // Preserve view when updating
             this.showComponentProperties(component);
         };

@@ -2,9 +2,42 @@
 
 import { COLORS } from './constants.js';
 
+/**
+ * Get theme colors from CSS variables
+ */
+function getThemeColors() {
+    const styles = getComputedStyle(document.documentElement);
+    const tealPrimary = styles.getPropertyValue('--teal-primary').trim();
+    const magentaPrimary = styles.getPropertyValue('--magenta-primary').trim();
+
+    // Convert CSS color to hex number for PixiJS
+    const cssToHex = (cssColor) => {
+        if (cssColor.startsWith('#')) {
+            return parseInt(cssColor.slice(1), 16);
+        }
+        const temp = document.createElement('div');
+        temp.style.color = cssColor;
+        document.body.appendChild(temp);
+        const computed = getComputedStyle(temp).color;
+        document.body.removeChild(temp);
+
+        const match = computed.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (match) {
+            return (parseInt(match[1]) << 16) | (parseInt(match[2]) << 8) | parseInt(match[3]);
+        }
+        return 0x808080; // Grey fallback
+    };
+
+    return {
+        tealPrimary: cssToHex(tealPrimary),
+        magentaPrimary: cssToHex(magentaPrimary)
+    };
+}
+
 export class WaferRenderer {
     constructor(containerElement) {
         this.container = containerElement;
+        this.themeColors = getThemeColors();
         this.app = null;
         this.waferGraphics = null;
         this.diesContainer = null;
@@ -24,6 +57,12 @@ export class WaferRenderer {
 
         // Current tooltip
         this.currentTooltip = null;
+
+        // Listen for theme changes
+        window.addEventListener('themeChanged', () => {
+            console.log('[WaferRenderer] Theme changed, refreshing colors');
+            this.refreshThemeColors();
+        });
 
         this.init();
     }
@@ -139,13 +178,23 @@ export class WaferRenderer {
     }
 
     /**
+     * Refresh theme colors (call when theme changes)
+     */
+    refreshThemeColors() {
+        this.themeColors = getThemeColors();
+        if (this.currentWaferData) {
+            this.render(this.currentWaferData); // Redraw with new colors
+        }
+    }
+
+    /**
      * Draw the wafer circle
      */
     drawWafer(centerX, centerY, radiusPixels) {
         const g = this.waferGraphics;
 
         // Outer glow
-        g.beginFill(0x00CED1, 0.05);
+        g.beginFill(this.themeColors.tealPrimary, 0.05);
         g.drawCircle(centerX, centerY, radiusPixels + 10);
         g.endFill();
 
@@ -155,11 +204,11 @@ export class WaferRenderer {
         g.endFill();
 
         // Teal border
-        g.lineStyle(3, 0x00CED1, 1);
+        g.lineStyle(3, this.themeColors.tealPrimary, 1);
         g.drawCircle(centerX, centerY, radiusPixels);
 
         // Inner magenta accent circle
-        g.lineStyle(1, 0xFF00FF, 0.3);
+        g.lineStyle(1, this.themeColors.magentaPrimary, 0.3);
         g.drawCircle(centerX, centerY, radiusPixels - 5);
 
         // Draw notch (wafer orientation indicator)
@@ -277,7 +326,7 @@ export class WaferRenderer {
         // Background
         const bg = new PIXI.Graphics();
         bg.beginFill(0x1a1a1a, 0.98);
-        bg.lineStyle(3, 0x00CED1, 1);
+        bg.lineStyle(3, this.themeColors.tealPrimary, 1);
         bg.drawRoundedRect(0, 0, 220, 140, 8);
         bg.endFill();
 
@@ -428,17 +477,22 @@ export class WaferRenderer {
             }
         });
 
-        // Pan with drag
+        // Pan with drag (left-click or middle-click)
         let isDragging = false;
         let dragStart = { x: 0, y: 0 };
         let viewportStart = { x: 0, y: 0 };
 
         this.app.view.addEventListener('mousedown', (e) => {
-            if (e.button === 0) { // Left click
+            if (e.button === 0 || e.button === 1) { // Left click or middle click
                 isDragging = true;
                 dragStart = { x: e.clientX, y: e.clientY };
                 viewportStart = { x: this.viewport.x, y: this.viewport.y };
                 this.app.view.style.cursor = 'grabbing';
+
+                // Prevent middle-click default behavior (auto-scroll)
+                if (e.button === 1) {
+                    e.preventDefault();
+                }
             }
         });
 

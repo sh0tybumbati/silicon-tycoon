@@ -1,17 +1,19 @@
 /* Silicon Tycoon - Art Deco Styling */
 
 :root {
-    /* Color Palette */
-    --teal-primary: #00CED1;
-    --teal-dark: #008B8B;
-    --teal-light: #20B2AA;
-    --magenta-primary: #FF00FF;
-    --magenta-dark: #C71585;
-    --magenta-light: #DA70D6;
-    --gold: #FFD700;
-    --black: #1a1a1a;
-    --cream: #F5F5DC;
-    --dark-bg: #0d0d0d;
+    /* Color Palette - Enhanced Cyberpunk Neon */
+    --teal-primary: #00FFFF;      /* Bright Cyan */
+    --teal-dark: #008B8B;         /* Dark Cyan */
+    --teal-light: #7FFFD4;        /* Aquamarine */
+    --magenta-primary: #FF00FF;   /* Pure Magenta */
+    --magenta-dark: #8B008B;      /* Dark Magenta */
+    --magenta-light: #FF1493;     /* Deep Pink */
+    --gold: #FFD700;              /* Gold */
+    --black: #0a0a0a;             /* Near Black */
+    --cream: #E0E0E0;             /* Light Gray */
+    --dark-bg: #050505;           /* Very Dark */
+    --neon-blue: #00D9FF;         /* Electric Blue */
+    --neon-purple: #B400FF;       /* Electric Purple */
 
     /* Typography */
     --font-display: 'Poiret One', cursive;
@@ -26,10 +28,227 @@
 
 body {
     font-family: var(--font-body);
-    background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 50%, var(--dark-bg) 100%);
+    background:
+        radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 50%),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 255, 0.03) 2px,
+            rgba(0, 255, 255, 0.03) 4px
+        ),
+        linear-gradient(135deg, var(--dark-bg) 0%, #0a0a1a 50%, var(--dark-bg) 100%);
     color: var(--cream);
     min-height: 100vh;
     overflow-x: hidden;
+}
+
+/* ==================== THEME UTILITY CLASSES ==================== */
+/*
+ * Unified theming system - Single source of truth for borders and styles.
+ *
+ * Usage:
+ *   - Add utility classes to HTML elements instead of inline CSS
+ *   - Example: <div class="panel-frame themed-panel-bg beefy-border-panel chevron-corners-large border-glow-animated">
+ *
+ * Benefits:
+ *   - No duplicate border definitions across components
+ *   - Theme switching works automatically via overrides in theme-retro.css
+ *   - Easy to maintain - change border style once, applies everywhere
+ *
+ * Utility Classes:
+ *   Border Styles:
+ *     - .beefy-border-panel   (10px multi-layer - for panels/frames)
+ *     - .beefy-border-canvas  (13px multi-layer - for canvas)
+ *     - .beefy-border-stats   (10px multi-layer - for stats)
+ *     - .beefy-border-button  (9px multi-layer - for buttons)
+ *
+ *   Corner Styles:
+ *     - .chevron-corners-xlarge  (25px chevron cutouts)
+ *     - .chevron-corners-large   (20px chevron cutouts)
+ *     - .chevron-corners-medium  (15px chevron cutouts)
+ *     - .chevron-corners-button  (15px chevron cutouts - button variant)
+ *     - .chevron-corners-small   (10px chevron cutouts)
+ *
+ *   Effects:
+ *     - .border-glow-animated    (Animated neon glow)
+ *     - .themed-panel-bg         (Shared panel background gradient)
+ */
+
+/* Shared border style - Multi-layer Art Deco borders */
+.beefy-border-panel {
+    box-shadow:
+        0 0 0 2px var(--black),
+        0 0 0 4px var(--teal-primary),
+        0 0 0 6px var(--black),
+        0 0 0 10px var(--magenta-primary),
+        0 0 30px rgba(0, 255, 255, 0.6),
+        0 0 60px rgba(255, 0, 255, 0.4),
+        inset 0 0 30px rgba(0, 255, 255, 0.15),
+        0 12px 40px rgba(0, 0, 0, 0.9);
+}
+
+.beefy-border-canvas {
+    box-shadow:
+        0 0 0 3px var(--black),
+        0 0 0 6px var(--magenta-primary),
+        0 0 0 9px var(--black),
+        0 0 0 13px var(--teal-primary),
+        0 0 40px rgba(255, 0, 255, 0.7),
+        0 0 80px rgba(0, 255, 255, 0.5),
+        inset 0 0 60px rgba(0, 255, 255, 0.2),
+        0 16px 48px rgba(0, 0, 0, 0.9);
+}
+
+.beefy-border-stats {
+    box-shadow:
+        0 0 0 2px var(--black),
+        0 0 0 4px var(--teal-primary),
+        0 0 0 6px var(--black),
+        0 0 0 10px var(--magenta-primary),
+        0 0 25px rgba(0, 206, 209, 0.5),
+        0 0 50px rgba(255, 0, 255, 0.3),
+        0 8px 32px rgba(0, 0, 0, 0.8);
+}
+
+.beefy-border-button {
+    box-shadow:
+        0 0 0 2px var(--black),
+        0 0 0 4px var(--teal-primary),
+        0 0 0 6px var(--black),
+        0 0 0 9px var(--magenta-primary),
+        0 0 30px rgba(0, 255, 255, 0.7),
+        0 0 60px rgba(255, 0, 255, 0.5),
+        inset 0 0 20px rgba(0, 255, 255, 0.25);
+}
+
+/* Chevron corner cutouts - Art Deco geometric style */
+.chevron-corners-xlarge {
+    clip-path: polygon(
+        0 25px, 25px 0,
+        calc(100% - 25px) 0, 100% 25px,
+        100% calc(100% - 25px), calc(100% - 25px) 100%,
+        25px 100%, 0 calc(100% - 25px)
+    );
+}
+
+.chevron-corners-large {
+    clip-path: polygon(
+        0 20px, 20px 0,
+        calc(100% - 20px) 0, 100% 20px,
+        100% calc(100% - 20px), calc(100% - 20px) 100%,
+        20px 100%, 0 calc(100% - 20px)
+    );
+}
+
+.chevron-corners-medium {
+    clip-path: polygon(
+        0 15px, 15px 0,
+        calc(100% - 15px) 0, 100% 15px,
+        100% calc(100% - 15px), calc(100% - 15px) 100%,
+        15px 100%, 0 calc(100% - 15px)
+    );
+}
+
+.chevron-corners-button {
+    clip-path: polygon(
+        15px 0, calc(100% - 15px) 0, 100% 15px,
+        100% calc(100% - 15px), calc(100% - 15px) 100%,
+        15px 100%, 0 calc(100% - 15px), 0 15px
+    );
+}
+
+.chevron-corners-small {
+    clip-path: polygon(
+        0 10px, 10px 0,
+        calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        10px 100%, 0 calc(100% - 10px)
+    );
+}
+
+/* Animated border glow */
+.border-glow-animated::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(135deg, var(--neon-blue), var(--magenta-dark), var(--neon-purple));
+    z-index: -1;
+    animation: border-glow 4s ease-in-out infinite;
+}
+
+.border-glow-animated.chevron-corners-xlarge::before {
+    top: -13px;
+    left: -13px;
+    right: -13px;
+    bottom: -13px;
+    background: linear-gradient(135deg, var(--magenta-dark), var(--neon-blue), var(--neon-purple));
+    clip-path: polygon(
+        0 25px, 25px 0,
+        calc(100% - 25px) 0, 100% 25px,
+        100% calc(100% - 25px), calc(100% - 25px) 100%,
+        25px 100%, 0 calc(100% - 25px)
+    );
+}
+
+.border-glow-animated.chevron-corners-large::before {
+    clip-path: polygon(
+        0 20px, 20px 0,
+        calc(100% - 20px) 0, 100% 20px,
+        100% calc(100% - 20px), calc(100% - 20px) 100%,
+        20px 100%, 0 calc(100% - 20px)
+    );
+}
+
+.border-glow-animated.chevron-corners-medium::before {
+    clip-path: polygon(
+        0 15px, 15px 0,
+        calc(100% - 15px) 0, 100% 15px,
+        100% calc(100% - 15px), calc(100% - 15px) 100%,
+        15px 100%, 0 calc(100% - 15px)
+    );
+}
+
+@keyframes border-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+}
+
+/* Shared panel background gradient */
+.themed-panel-bg {
+    background:
+        linear-gradient(135deg, rgba(0, 255, 255, 0.08), rgba(255, 0, 255, 0.08)),
+        linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(10, 10, 26, 0.9));
+    background-clip: padding-box;
+}
+
+/* Scanline effect */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(10px); }
 }
 
 .container {
@@ -70,13 +289,29 @@ body {
     font-family: var(--font-display);
     font-size: 4rem;
     font-weight: 400;
-    letter-spacing: 0.3em;
-    background: linear-gradient(135deg, var(--teal-primary), var(--magenta-primary), var(--teal-light));
+    letter-spacing: 0.5em;
+    background: linear-gradient(135deg, var(--neon-blue), var(--magenta-primary), var(--teal-light));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 30px rgba(0, 206, 209, 0.3);
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8))
+            drop-shadow(0 0 40px rgba(255, 0, 255, 0.6))
+            drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
     margin-bottom: 10px;
+    animation: neon-pulse 3s ease-in-out infinite;
+}
+
+@keyframes neon-pulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8))
+                drop-shadow(0 0 40px rgba(255, 0, 255, 0.6))
+                drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
+    }
+    50% {
+        filter: drop-shadow(0 0 30px rgba(0, 255, 255, 1))
+                drop-shadow(0 0 60px rgba(255, 0, 255, 0.8))
+                drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
+    }
 }
 
 .subtitle {
@@ -86,6 +321,7 @@ body {
     letter-spacing: 0.5em;
     color: var(--gold);
     text-transform: uppercase;
+    margin-top: 20px;
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -104,8 +340,11 @@ body {
     align-items: center;
     gap: 8px;
     padding: 15px 20px;
-    background: linear-gradient(135deg, rgba(0, 206, 209, 0.1), rgba(255, 0, 255, 0.1));
-    border: 2px solid var(--teal-dark);
+    background:
+        linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.15)),
+        rgba(0, 0, 0, 0.6);
+    border: 2px solid transparent;
+    background-clip: padding-box;
     color: var(--cream);
     font-family: var(--font-body);
     font-size: 0.85rem;
@@ -114,46 +353,67 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     clip-path: polygon(
-        0 8px, 8px 0,
-        calc(100% - 8px) 0, 100% 8px,
-        100% calc(100% - 8px), calc(100% - 8px) 100%,
-        8px 100%, 0 calc(100% - 8px)
+        0 10px, 10px 0,
+        calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        10px 100%, 0 calc(100% - 10px)
     );
     position: relative;
     min-width: 120px;
+    box-shadow:
+        0 0 15px rgba(0, 255, 255, 0.3),
+        inset 0 0 15px rgba(0, 255, 255, 0.1);
 }
 
 .nav-button::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, var(--teal-primary), var(--magenta-primary));
-    opacity: 0;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--neon-blue), var(--magenta-primary));
+    opacity: 0.5;
     transition: opacity 0.3s ease;
     z-index: -1;
+    clip-path: polygon(
+        0 10px, 10px 0,
+        calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%,
+        10px 100%, 0 calc(100% - 10px)
+    );
 }
 
 .nav-button:hover:not(:disabled) {
-    border-color: var(--magenta-primary);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 0, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 30px rgba(255, 0, 255, 0.6),
+        0 5px 20px rgba(0, 0, 0, 0.8),
+        inset 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
 .nav-button:hover:not(:disabled)::before {
-    opacity: 0.2;
+    opacity: 1;
 }
 
 .nav-button.active {
-    background: linear-gradient(135deg, var(--teal-dark), var(--magenta-dark));
-    border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    background:
+        linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3)),
+        rgba(0, 0, 0, 0.8);
+    box-shadow:
+        0 0 40px rgba(255, 215, 0, 0.8),
+        0 0 80px rgba(0, 255, 255, 0.5),
+        inset 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.nav-button.active::before {
+    background: linear-gradient(135deg, var(--gold), var(--neon-blue), var(--magenta-primary));
+    opacity: 0.8;
 }
 
 .nav-button.active .nav-label {
     color: var(--gold);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
 .nav-button:disabled {
@@ -195,38 +455,11 @@ body {
 }
 
 .panel-frame {
-    background: linear-gradient(135deg, rgba(0, 206, 209, 0.05), rgba(255, 0, 255, 0.05));
-    border: 2px solid var(--teal-primary);
+    border: 6px solid transparent;
     border-radius: 0;
     padding: 25px;
     position: relative;
-    box-shadow:
-        0 0 20px rgba(0, 206, 209, 0.3),
-        inset 0 0 20px rgba(0, 206, 209, 0.05);
-    clip-path: polygon(
-        0 15px, 15px 0,
-        calc(100% - 15px) 0, 100% 15px,
-        100% calc(100% - 15px), calc(100% - 15px) 100%,
-        15px 100%, 0 calc(100% - 15px)
-    );
-}
-
-.panel-frame::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(135deg, var(--teal-primary), var(--magenta-primary));
-    z-index: -1;
-    opacity: 0.3;
-    clip-path: polygon(
-        0 15px, 15px 0,
-        calc(100% - 15px) 0, 100% 15px,
-        100% calc(100% - 15px), calc(100% - 15px) 100%,
-        15px 100%, 0 calc(100% - 15px)
-    );
+    /* Uses utility classes: .themed-panel-bg .beefy-border-panel .chevron-corners-large .border-glow-animated */
 }
 
 .panel-header {
@@ -301,7 +534,7 @@ body {
 .art-deco-input {
     width: 100%;
     padding: 12px 15px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.85);
     border: 2px solid var(--teal-dark);
     color: var(--cream);
     font-family: var(--font-body);
@@ -364,43 +597,66 @@ body {
 .art-deco-button {
     width: 100%;
     padding: 15px;
-    background: linear-gradient(135deg, var(--teal-dark), var(--magenta-dark));
-    border: 2px solid var(--gold);
+    background:
+        linear-gradient(135deg, var(--neon-blue), var(--magenta-primary)),
+        rgba(0, 0, 0, 0.8);
+    border: 5px solid transparent;
+    background-clip: padding-box;
     color: var(--cream);
     font-family: var(--font-body);
     font-size: 1rem;
     font-weight: 700;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 20px;
-    clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
     position: relative;
     overflow: hidden;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.9);
+    /* Uses utility classes: .beefy-border-button .chevron-corners-button */
 }
 
 .art-deco-button::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: -9px;
+    right: -9px;
+    bottom: -9px;
+    background: linear-gradient(135deg, var(--gold), var(--neon-blue), var(--magenta-primary));
+    z-index: -1;
+    clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
+    animation: border-glow 4s ease-in-out infinite;
+}
+
+.art-deco-button::after {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     transition: left 0.5s ease;
+    z-index: 1;
 }
 
-.art-deco-button:hover::before {
+.art-deco-button:hover::after {
     left: 100%;
 }
 
 .art-deco-button:hover {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-    transform: translateY(-2px);
+    box-shadow:
+        0 0 50px rgba(255, 215, 0, 1),
+        0 0 100px rgba(0, 255, 255, 0.6),
+        inset 0 0 30px rgba(255, 215, 0, 0.3);
+    transform: translateY(-3px);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 1);
 }
 
 .art-deco-button:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
 }
 
 /* ==================== CANVAS AREA ==================== */
@@ -410,23 +666,31 @@ body {
 }
 
 .canvas-frame {
-    background: rgba(0, 0, 0, 0.6);
-    border: 3px solid var(--magenta-primary);
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 20px,
+            rgba(0, 255, 255, 0.02) 20px,
+            rgba(0, 255, 255, 0.02) 40px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 0, 255, 0.02) 20px,
+            rgba(255, 0, 255, 0.02) 40px
+        ),
+        rgba(0, 0, 0, 0.8);
+    background-clip: padding-box;
+    border: 8px solid transparent;
     min-height: 700px;
     height: 700px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow:
-        0 0 30px rgba(255, 0, 255, 0.4),
-        inset 0 0 30px rgba(0, 206, 209, 0.1);
-    clip-path: polygon(
-        0 20px, 20px 0,
-        calc(100% - 20px) 0, 100% 20px,
-        100% calc(100% - 20px), calc(100% - 20px) 100%,
-        20px 100%, 0 calc(100% - 20px)
-    );
+    /* Uses utility classes: .beefy-border-canvas .chevron-corners-xlarge .border-glow-animated */
 }
 
 #pixi-container {
@@ -448,15 +712,11 @@ body {
 
 .stats-frame {
     background: linear-gradient(135deg, rgba(0, 206, 209, 0.08), rgba(255, 0, 255, 0.08));
-    border: 2px solid var(--teal-primary);
+    background-clip: padding-box;
+    border: 6px solid transparent;
     padding: 25px;
-    clip-path: polygon(
-        0 10px, 10px 0,
-        calc(100% - 10px) 0, 100% 10px,
-        100% calc(100% - 10px), calc(100% - 10px) 100%,
-        10px 100%, 0 calc(100% - 10px)
-    );
-    box-shadow: 0 0 20px rgba(0, 206, 209, 0.3);
+    position: relative;
+    /* Uses utility classes: .beefy-border-stats .chevron-corners-medium .border-glow-animated */
 }
 
 .stat-group {
@@ -469,7 +729,7 @@ body {
 .stat-item {
     text-align: center;
     padding: 15px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.85);
     border-left: 3px solid var(--magenta-primary);
     border-right: 3px solid var(--teal-primary);
 }
@@ -518,8 +778,8 @@ body {
     align-items: center;
     gap: 10px;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(0, 206, 209, 0.3);
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(0, 206, 209, 0.5);
 }
 
 .color-indicator {
@@ -566,6 +826,38 @@ body {
     font-size: 0.9rem;
 }
 
+/* ==================== THEME SWITCHER BUTTON ==================== */
+
+.theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.2), rgba(255, 0, 255, 0.2));
+    border: 2px solid var(--teal-primary);
+    color: var(--cream);
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    clip-path: polygon(
+        0 8px, 8px 0,
+        calc(100% - 8px) 0, 100% 8px,
+        100% calc(100% - 8px), calc(100% - 8px) 100%,
+        8px 100%, 0 calc(100% - 8px)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.theme-switcher:hover {
+    border-color: var(--magenta-primary);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+}
+
 /* ==================== RESPONSIVE ==================== */
 
 @media (max-width: 1200px) {
@@ -579,6 +871,11 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* Base typography - ensure minimum 16px for readability */
+    body {
+        font-size: 16px;
+    }
+
     .game-title {
         font-size: 2rem;
         letter-spacing: 0.2em;
@@ -589,6 +886,56 @@ body {
         letter-spacing: 0.3em;
     }
 
+    /* Panel headers - scale up */
+    .panel-header h3 {
+        font-size: 1.4rem;
+    }
+
+    /* Form labels - larger for readability */
+    .control-group label {
+        font-size: 1rem;
+    }
+
+    /* Input fields - larger text */
+    .art-deco-select,
+    .art-deco-input {
+        font-size: 1.1rem;
+        padding: 14px 16px;
+    }
+
+    /* Buttons - larger text and touch targets */
+    .art-deco-button {
+        font-size: 1.1rem;
+        padding: 16px;
+        min-height: 50px; /* Ensure comfortable touch target */
+    }
+
+    /* Stats - larger values */
+    .stat-label {
+        font-size: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2.2rem;
+    }
+
+    /* Yield breakdown */
+    .yield-breakdown h4 {
+        font-size: 1.2rem;
+    }
+
+    .yield-label {
+        font-size: 1rem;
+    }
+
+    .yield-count {
+        font-size: 1.2rem;
+    }
+
+    .yield-percent {
+        font-size: 1rem;
+    }
+
     /* Navigation adjustments */
     .screen-navigation {
         gap: 10px;
@@ -596,18 +943,37 @@ body {
     }
 
     .nav-button {
-        padding: 10px 12px;
-        min-width: 90px;
-        gap: 5px;
+        padding: 12px 14px;
+        min-width: 100px;
+        min-height: 48px; /* Ensure 44px+ touch target */
+        gap: 6px;
     }
 
     .nav-icon {
-        font-size: 1.4rem;
+        font-size: 1.6rem;
     }
 
     .nav-label {
-        font-size: 0.65rem;
+        font-size: 0.75rem;
         letter-spacing: 0.1em;
+    }
+
+    /* Theme switcher button */
+    .theme-switcher {
+        width: 56px;
+        height: 56px;
+        font-size: 1.8rem;
+    }
+
+    /* Slider thumb - larger for touch */
+    .art-deco-slider::-webkit-slider-thumb {
+        width: 32px;
+        height: 32px;
+    }
+
+    .art-deco-slider::-moz-range-thumb {
+        width: 32px;
+        height: 32px;
     }
 
     .stat-group {
@@ -623,6 +989,13 @@ body {
         min-height: 500px;
         height: 500px;
         border: 2px solid var(--magenta-primary);
+        /* Better touch scrolling */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #pixi-container {
+        /* Optimize touch interaction */
+        touch-action: manipulation;
     }
 
     .container {
@@ -635,5 +1008,22 @@ body {
 
     .panel-frame {
         padding: 15px;
+        /* Smooth scrolling for overflow content */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Better control panel scrolling on mobile */
+    .control-panel {
+        max-height: none; /* Allow full height on mobile */
+    }
+
+    /* Improve select dropdowns on mobile */
+    .art-deco-select {
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300FFFF' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 40px;
     }
 }

@@ -1,0 +1,620 @@
+/* Silicon Tycoon - Retro 60s-70s TVA Theme */
+
+/* Override CSS variables for retro aesthetic */
+body[data-theme="retro"] {
+    /* TVA Color Palette - Strong oranges, browns, vintage tones */
+    --teal-primary: #E67E22;      /* TVA Orange */
+    --teal-dark: #CA6510;         /* Deep TVA Orange */
+    --teal-light: #F39C12;        /* Bright Orange */
+    --magenta-primary: #8B4513;   /* Saddle Brown */
+    --magenta-dark: #5D2F0E;      /* Dark Brown */
+    --magenta-light: #A0522D;     /* Sienna */
+    --gold: #D4A76A;              /* Vintage Gold */
+    --black: #2C1810;             /* Almost Black Brown */
+    --cream: #E8DCC4;             /* Vintage Paper */
+    --dark-bg: #1A0F08;           /* Very Dark Brown */
+}
+
+/* Body background - vintage wood paneling vibe */
+body[data-theme="retro"] {
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #2C1810 0px,
+            #3A2415 3px,
+            #2C1810 6px
+        ),
+        linear-gradient(135deg, #1A0F08 0%, #2C1810 50%, #1A0F08 100%);
+}
+
+/* Add vintage paper texture to body */
+body[data-theme="retro"]::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 50%, transparent 20%, rgba(230, 126, 34, 0.03) 21%, rgba(230, 126, 34, 0.03) 34%, transparent 35%),
+        radial-gradient(circle at 80% 80%, transparent 20%, rgba(139, 69, 19, 0.03) 21%, rgba(139, 69, 19, 0.03) 34%, transparent 35%);
+    background-size: 80px 80px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+}
+
+/* Ensure container is above texture */
+body[data-theme="retro"] .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* ==================== ROUNDED CORNERS EVERYWHERE ==================== */
+
+/* ==================== UNIFIED BORDER OVERRIDES ==================== */
+
+/* Override all chevron corners with rounded corners for CRT aesthetic */
+body[data-theme="retro"] .chevron-corners-xlarge,
+body[data-theme="retro"] .chevron-corners-large,
+body[data-theme="retro"] .chevron-corners-medium,
+body[data-theme="retro"] .chevron-corners-button,
+body[data-theme="retro"] .chevron-corners-small {
+    clip-path: none;
+    border-radius: 8px;
+}
+
+/* Override all beefy borders with TVA chunky CRT style */
+body[data-theme="retro"] .beefy-border-panel {
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 8px var(--teal-dark),
+        0 12px 24px rgba(0, 0, 0, 0.8),
+        inset 0 2px 0 rgba(230, 126, 34, 0.4),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+}
+
+body[data-theme="retro"] .beefy-border-canvas {
+    box-shadow:
+        0 0 0 3px #2C1810,
+        0 0 0 11px var(--teal-dark),
+        0 16px 32px rgba(0, 0, 0, 0.8),
+        inset 0 4px 0 rgba(230, 126, 34, 0.3),
+        inset 0 -4px 0 rgba(0, 0, 0, 0.7);
+}
+
+body[data-theme="retro"] .beefy-border-stats {
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 8px var(--teal-dark),
+        0 12px 24px rgba(0, 0, 0, 0.8),
+        inset 0 2px 0 rgba(230, 126, 34, 0.4),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+}
+
+body[data-theme="retro"] .beefy-border-button {
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 6px var(--teal-dark),
+        0 8px 16px rgba(0, 0, 0, 0.7),
+        inset 0 2px 0 rgba(230, 126, 34, 0.3),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Disable animated border glow in retro theme */
+body[data-theme="retro"] .border-glow-animated::before {
+    display: none;
+}
+
+/* Override panel background for retro */
+body[data-theme="retro"] .themed-panel-bg {
+    background: linear-gradient(135deg, #1A0F08 0%, #2C1810 100%);
+}
+
+body[data-theme="retro"] .modal-dialog {
+    clip-path: none;
+    border-radius: 16px;
+}
+
+body[data-theme="retro"] .die-card {
+    clip-path: none;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(139, 69, 19, 0.3);
+}
+
+body[data-theme="retro"] .die-card:hover {
+    box-shadow: 0 6px 18px rgba(193, 117, 51, 0.5);
+}
+
+/* ==================== NAVIGATION & BUTTONS ==================== */
+
+body[data-theme="retro"] .nav-button {
+    clip-path: none;
+    border-radius: 3px;
+    background: linear-gradient(180deg, rgba(230, 126, 34, 0.25) 0%, rgba(139, 69, 19, 0.25) 100%);
+    border: 3px solid var(--teal-primary);
+    border-bottom: 4px solid var(--magenta-dark);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.5),
+        inset 0 2px 3px rgba(230, 126, 34, 0.3),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="retro"] .nav-button::before {
+    display: none;
+}
+
+body[data-theme="retro"] .nav-button:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(230, 126, 34, 0.35) 0%, rgba(139, 69, 19, 0.35) 100%);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.6),
+        inset 0 2px 3px rgba(230, 126, 34, 0.4),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+body[data-theme="retro"] .nav-button.active {
+    background: linear-gradient(180deg, var(--teal-primary) 0%, var(--teal-dark) 100%);
+    border-color: var(--gold);
+    border-bottom-color: var(--magenta-dark);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.7),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.5),
+        inset 0 2px 3px rgba(243, 156, 18, 0.4);
+}
+
+body[data-theme="retro"] .art-deco-button {
+    clip-path: none;
+    border-radius: 6px;
+    background: linear-gradient(180deg, var(--teal-primary) 0%, var(--teal-dark) 100%);
+    border: 4px solid var(--teal-dark);
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 6px var(--magenta-dark),
+        0 8px 16px rgba(0, 0, 0, 0.7),
+        inset 0 2px 0 rgba(243, 156, 18, 0.5),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.6);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: #1A0F08;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+body[data-theme="retro"] .art-deco-button::before {
+    display: none;
+}
+
+body[data-theme="retro"] .art-deco-button:hover {
+    background: linear-gradient(180deg, var(--teal-light) 0%, var(--teal-primary) 100%);
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 6px var(--magenta-dark),
+        0 10px 20px rgba(0, 0, 0, 0.8),
+        inset 0 2px 0 rgba(243, 156, 18, 0.6),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+/* ==================== FORM CONTROLS ==================== */
+
+body[data-theme="retro"] .art-deco-select,
+body[data-theme="retro"] .art-deco-input,
+body[data-theme="retro"] .search-input,
+body[data-theme="retro"] .filter-select,
+body[data-theme="retro"] .snap-select {
+    clip-path: none;
+    border-radius: 2px;
+    background: rgba(26, 15, 8, 0.8);
+    border: 3px solid var(--magenta-dark);
+    border-bottom: 4px solid var(--black);
+    box-shadow:
+        inset 0 3px 6px rgba(0, 0, 0, 0.6),
+        inset 0 -1px 2px rgba(230, 126, 34, 0.1);
+    color: var(--teal-light);
+    font-weight: 600;
+}
+
+body[data-theme="retro"] .art-deco-select:focus,
+body[data-theme="retro"] .art-deco-input:focus,
+body[data-theme="retro"] .search-input:focus,
+body[data-theme="retro"] .filter-select:focus,
+body[data-theme="retro"] .snap-select:focus {
+    border-color: var(--teal-primary);
+    box-shadow:
+        0 0 8px rgba(230, 126, 34, 0.6),
+        inset 0 3px 6px rgba(0, 0, 0, 0.6),
+        inset 0 -1px 2px rgba(230, 126, 34, 0.2);
+}
+
+/* ==================== SLIDER - ANALOG STYLE ==================== */
+
+body[data-theme="retro"] .art-deco-slider {
+    background: linear-gradient(180deg, var(--black) 0%, var(--magenta-dark) 50%, var(--black) 100%);
+    border-radius: 10px;
+    height: 10px;
+    border: 2px solid var(--magenta-dark);
+    box-shadow:
+        inset 0 3px 6px rgba(0, 0, 0, 0.7),
+        0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="retro"] .art-deco-slider::-webkit-slider-thumb {
+    clip-path: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle at 30% 30%, var(--teal-light), var(--teal-dark));
+    border: 4px solid var(--magenta-dark);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.7),
+        inset 0 2px 4px rgba(243, 156, 18, 0.5),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+body[data-theme="retro"] .art-deco-slider::-moz-range-thumb {
+    clip-path: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle at 30% 30%, var(--teal-light), var(--teal-dark));
+    border: 4px solid var(--magenta-dark);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.7),
+        inset 0 2px 4px rgba(243, 156, 18, 0.5),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+/* ==================== HEADER DECORATIONS ==================== */
+
+body[data-theme="retro"] .header-decoration {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--teal-primary) 20%,
+        var(--gold) 50%,
+        var(--teal-primary) 80%,
+        transparent 100%);
+    clip-path: none;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(255, 140, 66, 0.3);
+}
+
+body[data-theme="retro"] .game-title {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: var(--teal-primary);
+    background-clip: unset;
+    color: var(--teal-primary);
+    text-shadow:
+        3px 3px 0 var(--magenta-dark),
+        6px 6px 10px rgba(0, 0, 0, 0.7);
+    filter: none;
+    font-weight: 700;
+    letter-spacing: 0.4em;
+}
+
+/* ==================== DIVIDERS ==================== */
+
+body[data-theme="retro"] .chevron-divider {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--teal-primary) 50%,
+        transparent 100%);
+    border-radius: 1px;
+}
+
+body[data-theme="retro"] .chevron-divider::before,
+body[data-theme="retro"] .chevron-divider::after {
+    background: var(--gold);
+    border-radius: 2px;
+    transform: rotate(45deg);
+}
+
+/* ==================== YIELD INDICATORS ==================== */
+
+body[data-theme="retro"] .color-indicator {
+    clip-path: none;
+    border-radius: 50%; /* Circular indicators */
+    border: 3px solid var(--cream);
+}
+
+body[data-theme="retro"] .color-indicator.perfect {
+    box-shadow:
+        0 0 8px rgba(0, 200, 0, 0.6),
+        inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="retro"] .color-indicator.diminished {
+    box-shadow:
+        0 0 8px rgba(200, 200, 0, 0.6),
+        inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="retro"] .color-indicator.damaged {
+    box-shadow:
+        0 0 8px rgba(200, 100, 0, 0.6),
+        inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="retro"] .color-indicator.unusable {
+    box-shadow:
+        0 0 8px rgba(200, 0, 0, 0.6),
+        inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== ARCHITECTURE SCREEN ==================== */
+
+/* Component palette and properties panel now use utility classes */
+
+body[data-theme="retro"] .designer-canvas-area {
+    background: rgba(47, 37, 32, 0.6);
+    border: 3px solid var(--teal-primary);
+    border-radius: 12px;
+}
+
+body[data-theme="retro"] .canvas-toolbar {
+    border-bottom: 2px solid var(--teal-dark);
+    border-radius: 12px 12px 0 0;
+}
+
+body[data-theme="retro"] .toolbar-divider {
+    background: var(--teal-dark);
+}
+
+body[data-theme="retro"] .tool-btn {
+    background: rgba(255, 140, 66, 0.25);
+    border: 2px solid var(--teal-dark);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="retro"] .tool-btn:hover {
+    border-color: var(--teal-primary);
+    box-shadow: 0 3px 8px rgba(193, 117, 51, 0.5);
+}
+
+body[data-theme="retro"] .tool-btn.active {
+    background: linear-gradient(135deg, var(--teal-dark), var(--magenta-dark));
+    border-color: var(--gold);
+    box-shadow:
+        0 0 12px rgba(244, 164, 96, 0.6),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+body[data-theme="retro"] .snap-select {
+    border: 2px solid var(--teal-dark);
+    border-radius: 4px;
+}
+
+body[data-theme="retro"] .snap-select:hover {
+    border-color: var(--teal-primary);
+}
+
+body[data-theme="retro"] .snap-select:focus {
+    border-color: var(--gold);
+}
+
+body[data-theme="retro"] .component-item {
+    background: rgba(47, 37, 32, 0.5);
+    border: 2px solid var(--teal-dark);
+    border-radius: 6px;
+}
+
+body[data-theme="retro"] .component-item:hover {
+    border-color: var(--teal-primary);
+    box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+}
+
+body[data-theme="retro"] .component-item.selected {
+    background: rgba(193, 117, 51, 0.35);
+    border-color: var(--gold);
+    box-shadow: 0 2px 10px rgba(244, 164, 96, 0.5);
+}
+
+/* ==================== ICON BUTTONS ==================== */
+
+body[data-theme="retro"] .icon-btn:hover {
+    color: var(--gold);
+}
+
+body[data-theme="retro"] .modal-close:hover {
+    color: var(--teal-primary);
+}
+
+/* ==================== VINTAGE PAPER TEXTURE ==================== */
+
+body[data-theme="retro"] .panel-frame,
+body[data-theme="retro"] .stats-frame,
+body[data-theme="retro"] .die-card {
+    position: relative;
+}
+
+body[data-theme="retro"] .panel-frame::after,
+body[data-theme="retro"] .stats-frame::after,
+body[data-theme="retro"] .die-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 140, 66, 0.02) 0px,
+            transparent 1px,
+            transparent 2px,
+            rgba(255, 140, 66, 0.02) 3px
+        );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ensure content is above texture */
+body[data-theme="retro"] .panel-frame > *,
+body[data-theme="retro"] .stats-frame > *,
+body[data-theme="retro"] .die-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* ==================== THEME SWITCHER BUTTON ==================== */
+
+.theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.2), rgba(255, 0, 255, 0.2));
+    border: 2px solid var(--teal-primary);
+    color: var(--cream);
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    clip-path: polygon(
+        0 8px, 8px 0,
+        calc(100% - 8px) 0, 100% 8px,
+        100% calc(100% - 8px), calc(100% - 8px) 100%,
+        8px 100%, 0 calc(100% - 8px)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.theme-switcher:hover {
+    border-color: var(--magenta-primary);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+}
+
+body[data-theme="retro"] .theme-switcher {
+    clip-path: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--teal-primary) 0%, var(--teal-dark) 100%);
+    border: 4px solid var(--magenta-dark);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.7),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.5),
+        inset 0 3px 6px rgba(243, 156, 18, 0.3);
+}
+
+body[data-theme="retro"] .theme-switcher:hover {
+    background: radial-gradient(circle, var(--teal-light) 0%, var(--teal-primary) 100%);
+    border-color: var(--gold);
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.8),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.5),
+        inset 0 3px 6px rgba(243, 156, 18, 0.4);
+    transform: scale(1.1) rotate(0deg);
+}
+
+/* ==================== TVA-STYLE HEADERS ==================== */
+
+body[data-theme="retro"] .panel-header {
+    background: linear-gradient(180deg, var(--teal-primary) 0%, var(--teal-dark) 100%);
+    padding: 10px 15px;
+    margin: 0 -20px 20px -20px;
+    border-radius: 6px 6px 0 0;
+    border: 4px solid var(--teal-dark);
+    border-bottom: none;
+    box-shadow:
+        0 0 0 2px #2C1810,
+        inset 0 2px 0 rgba(243, 156, 18, 0.4),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="retro"] .panel-header:first-child {
+    margin-top: -20px;
+    border-radius: 6px 6px 0 0;
+}
+
+body[data-theme="retro"] .panel-header h3 {
+    color: #1A0F08;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    margin: 0;
+}
+
+body[data-theme="retro"] .chevron-divider {
+    display: none;
+}
+
+/* TVA-style art deco header */
+body[data-theme="retro"] .art-deco-header {
+    background: linear-gradient(180deg, #1A0F08 0%, #2C1810 100%);
+    border: 8px solid var(--teal-primary);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow:
+        0 0 0 3px #2C1810,
+        0 0 0 11px var(--teal-dark),
+        0 16px 32px rgba(0, 0, 0, 0.8),
+        inset 0 4px 0 rgba(230, 126, 34, 0.3);
+}
+
+body[data-theme="retro"] .game-title {
+    color: var(--teal-primary);
+    text-shadow:
+        0 0 20px rgba(230, 126, 34, 0.6),
+        0 2px 0 #2C1810,
+        0 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="retro"] .subtitle {
+    color: var(--gold);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+
+body[data-theme="retro"] .header-decoration {
+    background: linear-gradient(90deg, 
+        transparent 0%,
+        var(--teal-primary) 50%,
+        transparent 100%);
+    height: 3px;
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.5);
+}
+
+
+/* ==================== ARCHITECTURE PAGE PANELS ==================== */
+
+body[data-theme="retro"] .component-palette {
+    clip-path: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1A0F08 0%, #2C1810 100%);
+    border: 6px solid var(--teal-primary);
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 8px var(--teal-dark),
+        0 12px 24px rgba(0, 0, 0, 0.8),
+        inset 0 2px 0 rgba(230, 126, 34, 0.4),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+}
+
+body[data-theme="retro"] .component-palette::before {
+    display: none;
+}
+
+body[data-theme="retro"] .properties-panel {
+    clip-path: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1A0F08 0%, #2C1810 100%);
+    border: 6px solid var(--teal-primary);
+    box-shadow:
+        0 0 0 2px #2C1810,
+        0 0 0 8px var(--teal-dark),
+        0 12px 24px rgba(0, 0, 0, 0.8),
+        inset 0 2px 0 rgba(230, 126, 34, 0.4),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+}
+
+body[data-theme="retro"] .properties-panel::before {
+    display: none;
+}
+

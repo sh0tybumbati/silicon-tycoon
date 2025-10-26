@@ -4,6 +4,9 @@ import { WAFER_SIZES, PROCESS_NODES, RETICLE_SIZES } from './constants.js';
 import { WaferPlanner } from './waferPlanner.js';
 import { WaferRenderer } from './renderer.js';
 import { formatNumber } from './physics.js';
+import { initTheme, setupThemeSelector } from './themeManager.js';
+import { getDieLibrary } from './dieLibrary.js';
+import { loadBatchPlans, MATURITY_MULTIPLIERS, MATURITY_LABELS } from './batchPlanner.js';
 
 class SiliconTycoonApp {
     constructor() {
@@ -14,6 +17,13 @@ class SiliconTycoonApp {
     }
 
     init() {
+        // Initialize theme system first
+        initTheme();
+        setupThemeSelector();
+
+        // Load batch plans (die library loads automatically when getDieLibrary() is called)
+        loadBatchPlans();
+
         // Initialize renderer
         const container = document.getElementById('pixi-container');
         this.renderer = new WaferRenderer(container);
@@ -25,6 +35,7 @@ class SiliconTycoonApp {
         this.populateWaferSizes();
         this.populateProcessNodes();
         this.populateReticleSizes();
+        this.populateDieLibrary();
 
         // Set up event listeners
         this.setupEventListeners();
@@ -113,6 +124,30 @@ class SiliconTycoonApp {
     }
 
     /**
+     * Populate die library dropdown
+     */
+    populateDieLibrary() {
+        const select = document.getElementById('die-select');
+        // Keep the "Manual Entry" option
+        const manualOption = select.querySelector('option[value=""]');
+        select.innerHTML = '';
+        if (manualOption) {
+            select.appendChild(manualOption);
+        }
+
+        const dieLibrary = getDieLibrary();
+        dieLibrary.forEach(die => {
+            const option = document.createElement('option');
+            option.value = die.id;
+            option.textContent = `${die.sku} (${die.dimensions.width}×${die.dimensions.height}mm, ${die.processNode}nm)`;
+            option.dataset.width = die.dimensions.width;
+            option.dataset.height = die.dimensions.height;
+            option.dataset.processNode = die.processNode;
+            select.appendChild(option);
+        });
+    }
+
+    /**
      * Set default values from planner config
      */
     setDefaultValues() {
@@ -150,6 +185,11 @@ class SiliconTycoonApp {
             });
         });
 
+        // Die select handler
+        document.getElementById('die-select').addEventListener('change', (e) => {
+            this.onDieSelected(e.target.value);
+        });
+
         // Auto-calculate on dropdown change
         const selects = document.querySelectorAll('.art-deco-select');
         selects.forEach(select => {
@@ -162,6 +202,39 @@ class SiliconTycoonApp {
                 }
             });
         });
+    }
+
+    /**
+     * Handle die selection from library
+     */
+    onDieSelected(dieId) {
+        if (!dieId) {
+            // Manual entry selected
+            document.getElementById('die-width').disabled = false;
+            document.getElementById('die-height').disabled = false;
+            document.getElementById('process-node').disabled = false;
+            return;
+        }
+
+        const dieLibrary = getDieLibrary();
+        const die = dieLibrary.find(d => d.id === dieId);
+        if (!die) {
+            console.error('[WaferPlanner] Die not found:', dieId);
+            return;
+        }
+
+        // Populate die dimensions and process node from library
+        document.getElementById('die-width').value = die.dimensions.width;
+        document.getElementById('die-height').value = die.dimensions.height;
+        document.getElementById('process-node').value = die.processNode || 7;
+
+        // Disable manual entry when die is selected
+        document.getElementById('die-width').disabled = true;
+        document.getElementById('die-height').disabled = true;
+        document.getElementById('process-node').disabled = true;
+
+        // Auto-calculate
+        this.onCalculate();
     }
 
     /**

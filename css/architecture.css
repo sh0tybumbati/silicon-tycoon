@@ -34,7 +34,7 @@
 
 .search-input {
     padding: 10px 15px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.85);
     border: 2px solid var(--teal-dark);
     color: var(--cream);
     font-family: var(--font-body);
@@ -44,7 +44,7 @@
 
 .filter-select {
     padding: 10px 15px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.85);
     border: 2px solid var(--teal-dark);
     color: var(--cream);
     font-family: var(--font-body);
@@ -246,7 +246,7 @@
     display: flex;
     justify-content: space-between;
     padding: 15px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.85);
     border-left: 3px solid var(--magenta-primary);
     margin-top: 20px;
     font-size: 0.9rem;
@@ -279,10 +279,12 @@
 
 /* Component Palette */
 .component-palette {
-    background: linear-gradient(135deg, rgba(0, 206, 209, 0.05), rgba(255, 0, 255, 0.05));
-    border: 2px solid var(--teal-primary);
+    border: 6px solid transparent;
+    background-clip: padding-box;
     padding: 15px;
-    overflow-y: auto;
+    overflow: hidden;
+    position: relative;
+    /* Uses utility classes: .themed-panel-bg .beefy-border-panel .chevron-corners-medium .border-glow-animated */
 }
 
 .palette-header {
@@ -305,7 +307,7 @@
 
 .component-item {
     padding: 12px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.85);
     border: 2px solid var(--teal-dark);
     cursor: grab;
     transition: all 0.2s ease;
@@ -340,7 +342,7 @@
     display: flex;
     gap: 10px;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.9);
     border-bottom: 2px solid var(--teal-dark);
     align-items: center;
 }
@@ -372,6 +374,26 @@
     background: var(--teal-dark);
 }
 
+.snap-select {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid var(--teal-dark);
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    padding: 5px 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.snap-select:hover {
+    border-color: var(--magenta-primary);
+}
+
+.snap-select:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
 .zoom-level {
     color: var(--gold);
     font-weight: 600;
@@ -385,11 +407,14 @@
 
 /* Properties Panel */
 .properties-panel {
-    background: linear-gradient(135deg, rgba(0, 206, 209, 0.05), rgba(255, 0, 255, 0.05));
-    border: 2px solid var(--teal-primary);
+    border: 6px solid transparent;
+    background-clip: padding-box;
     padding: 15px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    /* Uses utility classes: .themed-panel-bg .beefy-border-panel .chevron-corners-medium .border-glow-animated */
 }
 
 .panel-header h4 {
@@ -403,6 +428,25 @@
 .properties-content {
     flex: 1;
     overflow-y: auto;
+    padding-right: 5px;
+}
+
+.properties-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.properties-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+
+.properties-content::-webkit-scrollbar-thumb {
+    background: var(--teal-primary);
+    border-radius: 4px;
+}
+
+.properties-content::-webkit-scrollbar-thumb:hover {
+    background: var(--magenta-primary);
 }
 
 .designer-actions {
@@ -444,6 +488,139 @@
 }
 
 @media (max-width: 768px) {
+    /* Typography scaling for mobile */
+    .library-header h3 {
+        font-size: 1.6rem;
+    }
+
+    .die-card-title {
+        font-size: 1.3rem;
+    }
+
+    .die-card-type {
+        font-size: 0.95rem;
+    }
+
+    .die-card-stats {
+        font-size: 0.95rem;
+    }
+
+    .die-stat-label {
+        font-size: 0.85rem;
+    }
+
+    .die-stat-value {
+        font-size: 1rem;
+    }
+
+    /* Modal typography */
+    .modal-header h3 {
+        font-size: 1.6rem;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+    }
+
+    .art-deco-input,
+    .art-deco-select {
+        font-size: 1.1rem;
+        padding: 14px 16px;
+    }
+
+    textarea.art-deco-input {
+        font-size: 1rem;
+    }
+
+    .form-info {
+        font-size: 1rem;
+    }
+
+    /* Designer typography */
+    .palette-header h4 {
+        font-size: 1.2rem;
+    }
+
+    .component-item {
+        font-size: 0.95rem;
+        padding: 14px;
+    }
+
+    .panel-header h4 {
+        font-size: 1.2rem;
+    }
+
+    /* Search and filter inputs */
+    .search-input,
+    .filter-select {
+        font-size: 1.1rem;
+        padding: 12px 16px;
+    }
+
+    /* Buttons - ensure 44px touch targets */
+    .art-deco-button {
+        font-size: 1rem;
+        padding: 16px;
+        min-height: 50px; /* Comfortable touch target */
+    }
+
+    .icon-btn {
+        font-size: 1.4rem;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px; /* Increase touch area */
+    }
+
+    /* Modal close button - larger touch target */
+    .modal-close {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px;
+    }
+
+    /* Die card action buttons */
+    .die-card-actions .icon-btn {
+        min-width: 48px;
+        min-height: 48px;
+    }
+
+    /* Full-screen modals on mobile for better usability */
+    .modal-dialog {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+        clip-path: none; /* Remove chevron corners for full screen */
+    }
+
+    .modal-overlay {
+        padding: 0;
+    }
+
+    .modal-body {
+        padding: 20px;
+        max-height: calc(100vh - 200px); /* Account for header/footer */
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding: 16px 20px;
+        position: sticky;
+        top: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 10;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+        position: sticky;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 10;
+    }
+
     .die-grid {
         grid-template-columns: 1fr;
     }
@@ -470,28 +647,126 @@
     /* Die designer mobile improvements */
     .designer-canvas-area {
         min-height: 60vh;
+        /* Enable smooth scrolling within canvas */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .designer-canvas {
+        /* Improve touch interaction */
+        touch-action: pan-x pan-y pinch-zoom;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Toolbar mobile responsive */
+    .canvas-toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        /* Sticky toolbar on scroll */
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .tool-btn {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1.4rem;
+        /* Better tap feedback */
+        -webkit-tap-highlight-color: rgba(0, 255, 255, 0.3);
+    }
+
+    .toolbar-divider {
+        display: none; /* Hide dividers on mobile to save space */
+    }
+
+    .snap-select {
+        flex: 1;
+        min-width: 100px;
+        font-size: 1rem;
+        padding: 8px 10px;
+        min-height: 44px; /* Touch target */
+    }
+
+    label[for="snap-size"] {
+        font-size: 1.4rem !important;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
     }
 
     .properties-panel {
         min-height: auto;
+        /* Better scrolling on mobile */
+        -webkit-overflow-scrolling: touch;
     }
 
     .properties-content {
-        overflow-y: visible;
+        overflow-y: auto;
+        max-height: 400px; /* Limit height for better mobile UX */
+        -webkit-overflow-scrolling: touch;
     }
 
     .component-palette {
-        max-height: 200px;
+        max-height: 250px;
+        -webkit-overflow-scrolling: touch;
     }
 
-    .canvas-toolbar {
-        flex-wrap: wrap;
-        gap: 5px;
+    .component-list {
+        /* Improve scrolling performance */
+        -webkit-overflow-scrolling: touch;
     }
 
-    .tool-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
+    /* Better spacing for component selection on mobile */
+    .component-item {
+        margin-bottom: 8px;
+    }
+
+    /* Designer actions - full width on mobile */
+    .designer-actions {
+        position: sticky;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        padding: 15px;
+        margin: -15px; /* Counteract panel padding */
+        margin-top: 15px;
+        z-index: 10;
+    }
+
+    .designer-actions button {
+        width: 100%;
     }
 }
+
+.palette-header,
+.component-list {
+    position: relative;
+    z-index: 1;
+}
+
+.component-list {
+    overflow-y: auto;
+    max-height: calc(100% - 60px);
+    padding-right: 5px;
+}
+
+/* Custom scrollbar for component list */
+.component-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.component-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+
+.component-list::-webkit-scrollbar-thumb {
+    background: var(--teal-primary);
+    border-radius: 4px;
+}
+
+.component-list::-webkit-scrollbar-thumb:hover {
+    background: var(--magenta-primary);
+}
+

@@ -1,0 +1,350 @@
+/* Silicon Tycoon - Radial Theme Selector */
+
+/* ==================== THEME SELECTOR CONTAINER ==================== */
+
+.theme-selector-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+/* ==================== BRUSH BUTTON (Main Toggle) ==================== */
+
+.theme-brush-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal-dark), var(--magenta-dark));
+    border: 3px solid var(--gold);
+    color: var(--cream);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow:
+        0 0 20px rgba(255, 215, 0, 0.5),
+        inset 0 0 10px rgba(255, 215, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10001;
+}
+
+.theme-brush-btn:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow:
+        0 0 30px rgba(255, 215, 0, 0.8),
+        inset 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.theme-brush-btn.active {
+    transform: rotate(180deg);
+}
+
+/* Retro theme override */
+body[data-theme="retro"] .theme-brush-btn {
+    background: linear-gradient(135deg, #CA6510, #5D2F0E);
+    border-color: #D4A76A;
+    box-shadow:
+        0 0 15px rgba(212, 167, 106, 0.4),
+        inset 0 2px 0 rgba(230, 126, 34, 0.4);
+    border-radius: 8px;
+}
+
+body[data-theme="retro"] .theme-brush-btn:hover {
+    box-shadow:
+        0 0 20px rgba(212, 167, 106, 0.6),
+        inset 0 2px 0 rgba(230, 126, 34, 0.5);
+}
+
+/* Apple II theme override */
+body[data-theme="apple2"] .theme-brush-btn {
+    background: #000000;
+    border: 3px solid #00FF00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+    border-radius: 0;
+}
+
+body[data-theme="apple2"] .theme-brush-btn:hover {
+    background: #00FF00;
+    color: #000000;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
+}
+
+/* ==================== RADIAL THEME WHEEL ==================== */
+
+.theme-wheel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+}
+
+.theme-wheel.open {
+    pointer-events: auto;
+}
+
+/* ==================== THEME WHEEL BUTTONS ==================== */
+
+.theme-wheel-btn {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.9), rgba(255, 0, 255, 0.9));
+    border: 3px solid var(--teal-primary);
+    color: var(--cream);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow:
+        0 0 15px rgba(0, 255, 255, 0.5),
+        inset 0 0 10px rgba(0, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    top: 25px;
+    right: -25px;
+}
+
+.theme-wheel.open .theme-wheel-btn {
+    animation: flyOut 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Position buttons in a circle */
+.theme-wheel-btn:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.theme-wheel-btn:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.theme-wheel-btn:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+/* Button positions calculated for 3 buttons in quarter-circle */
+/* Top-right corner, so fly out down and left only to stay on screen */
+.theme-wheel-btn[data-theme="deco"] {
+    --angle: 90deg;  /* Straight down */
+    --distance: 100px;
+}
+
+.theme-wheel-btn[data-theme="retro"] {
+    --angle: 135deg;  /* Down-left diagonal */
+    --distance: 100px;
+}
+
+.theme-wheel-btn[data-theme="apple2"] {
+    --angle: 180deg;  /* Straight left */
+    --distance: 100px;
+}
+
+@keyframes flyOut {
+    to {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            rotate(var(--angle))
+            translateX(var(--distance))
+            rotate(calc(-1 * var(--angle)))
+            scale(1);
+    }
+}
+
+/* Hover effect */
+.theme-wheel-btn:hover:not(.theme-locked) {
+    transform:
+        translate(-50%, -50%)
+        rotate(var(--angle))
+        translateX(var(--distance))
+        rotate(calc(-1 * var(--angle)))
+        scale(1.2);
+    box-shadow:
+        0 0 25px rgba(0, 255, 255, 0.8),
+        inset 0 0 15px rgba(0, 255, 255, 0.3);
+    border-color: var(--gold);
+}
+
+/* Active theme */
+.theme-wheel-btn.active {
+    background: linear-gradient(135deg, var(--gold), var(--magenta-primary));
+    border-color: var(--gold);
+    box-shadow:
+        0 0 20px rgba(255, 215, 0, 0.9),
+        inset 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+/* Locked state */
+.theme-wheel-btn.theme-locked {
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.9), rgba(30, 30, 30, 0.9));
+    border-color: #555555;
+    color: #777777;
+    cursor: not-allowed;
+    box-shadow:
+        0 0 5px rgba(0, 0, 0, 0.5),
+        inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.theme-wheel-btn.theme-locked:hover {
+    transform:
+        translate(-50%, -50%)
+        rotate(var(--angle))
+        translateX(var(--distance))
+        rotate(calc(-1 * var(--angle)))
+        scale(1);
+}
+
+/* Lock icon overlay */
+.theme-wheel-btn.theme-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 0.8rem;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==================== TOOLTIPS ==================== */
+
+.theme-wheel-btn::before {
+    content: attr(title);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: var(--cream);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: var(--font-body);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    border: 1px solid var(--teal-primary);
+    z-index: 10002;
+}
+
+.theme-wheel-btn:hover::before {
+    opacity: 1;
+}
+
+.theme-wheel-btn.theme-locked::before {
+    content: attr(data-locked-tooltip);
+}
+
+/* ==================== RETRO THEME OVERRIDES ==================== */
+
+body[data-theme="retro"] .theme-wheel-btn {
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.9), rgba(139, 69, 19, 0.9));
+    border-color: #E67E22;
+    box-shadow:
+        0 0 10px rgba(230, 126, 34, 0.4),
+        inset 0 2px 0 rgba(230, 126, 34, 0.3);
+    border-radius: 8px;
+}
+
+body[data-theme="retro"] .theme-wheel-btn:hover:not(.theme-locked) {
+    box-shadow:
+        0 0 15px rgba(230, 126, 34, 0.6),
+        inset 0 2px 0 rgba(230, 126, 34, 0.4);
+    border-color: #D4A76A;
+}
+
+body[data-theme="retro"] .theme-wheel-btn.active {
+    background: linear-gradient(135deg, #D4A76A, #CA6510);
+    border-color: #D4A76A;
+    box-shadow:
+        0 0 15px rgba(212, 167, 106, 0.7),
+        inset 0 2px 0 rgba(230, 126, 34, 0.5);
+}
+
+body[data-theme="retro"] .theme-wheel-btn.theme-locked {
+    background: linear-gradient(135deg, rgba(60, 40, 30, 0.9), rgba(40, 25, 20, 0.9));
+    border-color: #4A3020;
+    box-shadow:
+        0 0 5px rgba(0, 0, 0, 0.5),
+        inset 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== APPLE II THEME OVERRIDES ==================== */
+
+body[data-theme="apple2"] .theme-wheel-btn {
+    background: #000000;
+    border: 3px solid #00FF00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    border-radius: 0;
+}
+
+body[data-theme="apple2"] .theme-wheel-btn:hover:not(.theme-locked) {
+    background: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+    border-color: #00FF00;
+}
+
+body[data-theme="apple2"] .theme-wheel-btn.active {
+    background: #00AA00;
+    color: #000000;
+    border-color: #00FF00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
+}
+
+body[data-theme="apple2"] .theme-wheel-btn.theme-locked {
+    background: #000000;
+    border-color: #005500;
+    color: #005500;
+    box-shadow: none;
+}
+
+body[data-theme="apple2"] .theme-wheel-btn::before {
+    background: #000000;
+    color: #00FF00;
+    border: 1px solid #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+    .theme-selector-container {
+        top: 15px;
+        right: 15px;
+    }
+
+    .theme-brush-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+
+    .theme-wheel {
+        width: 160px;
+        height: 160px;
+    }
+
+    .theme-wheel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .theme-wheel-btn[data-theme="deco"],
+    .theme-wheel-btn[data-theme="retro"],
+    .theme-wheel-btn[data-theme="apple2"] {
+        --distance: 70px;
+    }
+}

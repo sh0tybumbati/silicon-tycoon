@@ -12,29 +12,32 @@ export const WAFER_SIZES = [
 ];
 
 // Process nodes with historical data
+// BALANCED: Defect densities reduced to "early production" levels (85-90% reduction)
+// Represents processes that have been in production 1-2 years (not brand new, not fully mature)
+// Mature processes would be even lower (wafer planner maturity system can simulate this)
 export const PROCESS_NODES = [
-    { node: 10000, label: '10μm', year: 1971, baseDefectDensity: 0.1 },
-    { node: 6000, label: '6μm', year: 1974, baseDefectDensity: 0.15 },
-    { node: 3000, label: '3μm', year: 1977, baseDefectDensity: 0.2 },
-    { node: 1500, label: '1.5μm', year: 1982, baseDefectDensity: 0.3 },
-    { node: 1000, label: '1μm', year: 1985, baseDefectDensity: 0.4 },
-    { node: 800, label: '800nm', year: 1989, baseDefectDensity: 0.5 },
-    { node: 600, label: '600nm', year: 1994, baseDefectDensity: 0.6 },
-    { node: 350, label: '350nm', year: 1995, baseDefectDensity: 0.7 },
-    { node: 250, label: '250nm', year: 1997, baseDefectDensity: 0.8 },
-    { node: 180, label: '180nm', year: 1999, baseDefectDensity: 1.0 },
-    { node: 130, label: '130nm', year: 2001, baseDefectDensity: 1.2 },
-    { node: 90, label: '90nm', year: 2004, baseDefectDensity: 1.5 },
-    { node: 65, label: '65nm', year: 2006, baseDefectDensity: 1.8 },
-    { node: 45, label: '45nm', year: 2008, baseDefectDensity: 2.2 },
-    { node: 32, label: '32nm', year: 2010, baseDefectDensity: 2.5 },
-    { node: 22, label: '22nm', year: 2012, baseDefectDensity: 3.0 },
-    { node: 14, label: '14nm', year: 2014, baseDefectDensity: 3.5 },
-    { node: 12, label: '12nm', year: 2017, baseDefectDensity: 3.8 },
-    { node: 10, label: '10nm', year: 2016, baseDefectDensity: 4.0 },
-    { node: 7, label: '7nm', year: 2018, baseDefectDensity: 4.5 },
-    { node: 5, label: '5nm', year: 2020, baseDefectDensity: 5.0 },
-    { node: 3, label: '3nm', year: 2022, baseDefectDensity: 5.5 }
+    { node: 10000, label: '10μm', year: 1971, baseDefectDensity: 0.05 },  // Was 0.1
+    { node: 6000, label: '6μm', year: 1974, baseDefectDensity: 0.08 },    // Was 0.15
+    { node: 3000, label: '3μm', year: 1977, baseDefectDensity: 0.10 },    // Was 0.2
+    { node: 1500, label: '1.5μm', year: 1982, baseDefectDensity: 0.12 },  // Was 0.3
+    { node: 1000, label: '1μm', year: 1985, baseDefectDensity: 0.15 },    // Was 0.4
+    { node: 800, label: '800nm', year: 1989, baseDefectDensity: 0.18 },   // Was 0.5
+    { node: 600, label: '600nm', year: 1994, baseDefectDensity: 0.20 },   // Was 0.6
+    { node: 350, label: '350nm', year: 1995, baseDefectDensity: 0.22 },   // Was 0.7
+    { node: 250, label: '250nm', year: 1997, baseDefectDensity: 0.25 },   // Was 0.8
+    { node: 180, label: '180nm', year: 1999, baseDefectDensity: 0.15 },   // Was 1.0 - mature process
+    { node: 130, label: '130nm', year: 2001, baseDefectDensity: 0.18 },   // Was 1.2
+    { node: 90, label: '90nm', year: 2004, baseDefectDensity: 0.20 },     // Was 1.5
+    { node: 65, label: '65nm', year: 2006, baseDefectDensity: 0.25 },     // Was 1.8
+    { node: 45, label: '45nm', year: 2008, baseDefectDensity: 0.30 },     // Was 2.2
+    { node: 32, label: '32nm', year: 2010, baseDefectDensity: 0.35 },     // Was 2.5
+    { node: 22, label: '22nm', year: 2012, baseDefectDensity: 0.40 },     // Was 3.0
+    { node: 14, label: '14nm', year: 2014, baseDefectDensity: 0.45 },     // Was 3.5 - Your chip!
+    { node: 12, label: '12nm', year: 2017, baseDefectDensity: 0.50 },     // Was 3.8
+    { node: 10, label: '10nm', year: 2016, baseDefectDensity: 0.55 },     // Was 4.0
+    { node: 7, label: '7nm', year: 2018, baseDefectDensity: 0.60 },       // Was 4.5
+    { node: 5, label: '5nm', year: 2020, baseDefectDensity: 0.70 },       // Was 5.0
+    { node: 3, label: '3nm', year: 2022, baseDefectDensity: 0.80 }        // Was 5.5
 ];
 
 // Realistic transistor density by process node (Million transistors per mm²)
@@ -168,6 +171,7 @@ export const NODE_VOLTAGE = {
 // Leakage power per million transistors (Watts) - static power consumption
 // Smaller nodes have worse leakage due to quantum tunneling
 // Real-world values: modern chips have 10-30W total leakage for billions of transistors
+// BALANCED: Reduced by 60-70% from previous values for realistic gameplay
 export const LEAKAGE_PER_M_TRANSISTORS = {
     10000: 0.000001, // 10μm: negligible leakage
     6000: 0.000002,
@@ -178,28 +182,29 @@ export const LEAKAGE_PER_M_TRANSISTORS = {
     600: 0.0001,
     350: 0.0002,
     250: 0.0005,
-    180: 0.001,      // 180nm: 0.001W per million transistors
-    130: 0.002,
-    90: 0.004,
-    65: 0.006,       // Leakage becomes significant
-    45: 0.008,
-    32: 0.010,
-    22: 0.012,       // 22nm: leakage major concern
-    14: 0.015,       // 14nm: ~40W leakage for 2.6B transistors = 0.015W/M
-    12: 0.017,       // 12nm: interpolated
-    10: 0.020,
-    7: 0.025,        // 7nm: high leakage
-    5: 0.030,        // 5nm: very high leakage (~50W for 16B transistors)
-    3: 0.035         // 3nm: extreme leakage
+    180: 0.0004,     // 180nm: reduced from 0.001
+    130: 0.0008,     // Reduced from 0.002
+    90: 0.0016,      // Reduced from 0.004
+    65: 0.0024,      // Reduced from 0.006 - Leakage becomes significant
+    45: 0.0032,      // Reduced from 0.008
+    32: 0.004,       // Reduced from 0.010
+    22: 0.005,       // Reduced from 0.012 - leakage major concern
+    14: 0.006,       // Reduced from 0.015 - Real: ~15W leakage for 2.6B transistors = 0.006W/M
+    12: 0.007,       // Reduced from 0.017
+    10: 0.008,       // Reduced from 0.020
+    7: 0.010,        // Reduced from 0.025 - high leakage
+    5: 0.012,        // Reduced from 0.030 - very high leakage
+    3: 0.015         // Reduced from 0.035 - extreme leakage
 };
 
 // Thermal limits by chip type (W/mm²)
+// BALANCED: Increased to allow more headroom before throttling
 export const THERMAL_LIMITS = {
-    consumer_cpu: 0.50,     // Consumer desktop CPU
-    server_cpu: 0.70,       // Server CPU with better cooling
-    laptop_cpu: 0.35,       // Laptop CPU (thermal constrained)
-    gpu: 0.40,              // GPU (large area, challenging cooling)
-    mobile_soc: 0.25        // Mobile SoC (very thermal constrained)
+    consumer_cpu: 0.60,     // Consumer desktop CPU (was 0.50) - modern CPUs can handle 0.5-0.7 W/mm²
+    server_cpu: 0.80,       // Server CPU with better cooling (was 0.70)
+    laptop_cpu: 0.40,       // Laptop CPU (thermal constrained) (was 0.35)
+    gpu: 0.45,              // GPU (large area, challenging cooling) (was 0.40)
+    mobile_soc: 0.30        // Mobile SoC (very thermal constrained) (was 0.25)
 };
 
 // Interconnect requirements: which components need to communicate
@@ -248,14 +253,15 @@ export const MEMORY_BANDWIDTH_PER_CONTROLLER = {
 
 // Chip classification criteria for two-axis system
 // CLASS = performance tier, GRADE = market segment
+// BALANCED: Adjusted TDP ranges for easier progression and overlap
 export const CHIP_CLASSIFICATION_CRITERIA = {
-    // Performance class thresholds
+    // Performance class thresholds (cores OR tdp, not AND)
     class: {
         'Low-Power': { cores: [1, 2], tdp: [0, 15] },
-        'Budget': { cores: [2, 4], tdp: [15, 65] },
-        'Mid-Range': { cores: [4, 8], tdp: [65, 125] },
-        'High-End': { cores: [8, 16], tdp: [125, 200] },
-        'Halo': { cores: [16, 256], tdp: [200, 1000] }
+        'Budget': { cores: [2, 4], tdp: [15, 80] },         // Was [15, 65] - easier to reach
+        'Mid-Range': { cores: [4, 8], tdp: [60, 125] },     // Was [65, 125] - overlap allows 8-core chips
+        'High-End': { cores: [8, 16], tdp: [100, 200] },    // Was [125, 200] - lower entry point
+        'Halo': { cores: [16, 256], tdp: [180, 1000] }      // Was [200, 1000] - achievable with 16+ cores
     },
 
     // Market grade detection ratios

@@ -1,0 +1,383 @@
+/* Silicon Tycoon - Apple II Theme (1977-1993) */
+
+/* Override CSS variables for monochrome green phosphor CRT aesthetic */
+body[data-theme="apple2"] {
+    /* Apple II Color Palette - Monochrome Green Phosphor */
+    --teal-primary: #00FF00;      /* Bright phosphor green */
+    --teal-dark: #00AA00;         /* Dimmer green */
+    --teal-light: #33FF33;        /* Extra bright green */
+    --magenta-primary: #00DD00;   /* Medium green (replaces magenta) */
+    --magenta-dark: #009900;      /* Dark green */
+    --magenta-light: #00FF00;     /* Bright green */
+    --gold: #00FF00;              /* Gold -> Green */
+    --black: #000000;             /* Pure black CRT */
+    --cream: #00FF00;             /* Text -> Green */
+    --dark-bg: #000000;           /* Pure black background */
+}
+
+/* Body background - CRT scanline effect */
+body[data-theme="apple2"] {
+    background:
+        /* Horizontal scanlines */
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        /* Subtle vertical grain */
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 1px,
+            rgba(0, 255, 0, 0.02) 1px,
+            rgba(0, 255, 0, 0.02) 2px
+        ),
+        /* Pure black base */
+        #000000;
+
+    /* Override font to monospace */
+    font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+}
+
+/* Add CRT screen glow effect */
+body[data-theme="apple2"]::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Ensure container is visible */
+body[data-theme="apple2"] .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Override all beefy borders with simple green borders */
+body[data-theme="apple2"] .beefy-border-panel,
+body[data-theme="apple2"] .beefy-border-canvas,
+body[data-theme="apple2"] .beefy-border-stats,
+body[data-theme="apple2"] .beefy-border-button {
+    box-shadow: none;
+    border: 2px solid #00FF00;
+}
+
+/* Extra emphasis for canvas */
+body[data-theme="apple2"] .beefy-border-canvas {
+    border: 3px solid #00FF00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+/* Override all chevron corners with square corners */
+body[data-theme="apple2"] .chevron-corners-xlarge,
+body[data-theme="apple2"] .chevron-corners-large,
+body[data-theme="apple2"] .chevron-corners-medium,
+body[data-theme="apple2"] .chevron-corners-button,
+body[data-theme="apple2"] .chevron-corners-small {
+    clip-path: none;
+    border-radius: 0;
+}
+
+/* Override animated border glow with phosphor glow */
+body[data-theme="apple2"] .border-glow-animated::before {
+    display: none;
+}
+
+body[data-theme="apple2"] .border-glow-animated {
+    box-shadow:
+        0 0 10px rgba(0, 255, 0, 0.4),
+        inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+/* Override themed panel backgrounds with pure black */
+body[data-theme="apple2"] .themed-panel-bg {
+    background: #000000;
+    background-clip: padding-box;
+}
+
+/* Headers and titles */
+body[data-theme="apple2"] .art-deco-header {
+    background: #000000;
+}
+
+body[data-theme="apple2"] .game-title {
+    color: #00FF00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.2em;
+}
+
+body[data-theme="apple2"] .subtitle {
+    color: #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+/* Header decorations */
+body[data-theme="apple2"] .header-decoration {
+    background: #00FF00;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+}
+
+/* Buttons */
+body[data-theme="apple2"] .art-deco-button,
+body[data-theme="apple2"] .menu-button {
+    background: #000000;
+    border: 2px solid #00FF00;
+    color: #00FF00;
+    box-shadow: none;
+    border-radius: 0;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+}
+
+body[data-theme="apple2"] .art-deco-button:hover,
+body[data-theme="apple2"] .menu-button:hover {
+    background: #00FF00;
+    color: #000000;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+body[data-theme="apple2"] .art-deco-button:disabled,
+body[data-theme="apple2"] .menu-button:disabled {
+    border-color: #005500;
+    color: #005500;
+    background: #000000;
+}
+
+/* Navigation buttons */
+body[data-theme="apple2"] .nav-button {
+    background: #000000;
+    border: 2px solid #00FF00;
+    color: #00FF00;
+    box-shadow: none;
+}
+
+body[data-theme="apple2"] .nav-button:hover:not(:disabled) {
+    background: #00FF00;
+    color: #000000;
+}
+
+body[data-theme="apple2"] .nav-button.active {
+    background: #00AA00;
+    color: #000000;
+    border-color: #00FF00;
+}
+
+body[data-theme="apple2"] .nav-button:disabled {
+    border-color: #005500;
+    color: #005500;
+}
+
+/* Forms */
+body[data-theme="apple2"] .art-deco-input,
+body[data-theme="apple2"] .art-deco-select,
+body[data-theme="apple2"] .search-input,
+body[data-theme="apple2"] .filter-select {
+    background: #000000;
+    border: 2px solid #00FF00;
+    color: #00FF00;
+    font-family: 'Courier New', monospace;
+    border-radius: 0;
+}
+
+body[data-theme="apple2"] .art-deco-input:focus,
+body[data-theme="apple2"] .art-deco-select:focus {
+    border-color: #00FF00;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    outline: none;
+}
+
+/* Die cards */
+body[data-theme="apple2"] .die-card {
+    background: #000000;
+    border: 2px solid #00FF00;
+    clip-path: none;
+}
+
+body[data-theme="apple2"] .die-card:hover {
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    border-color: #00FF00;
+}
+
+/* Modal dialogs */
+body[data-theme="apple2"] .modal-dialog {
+    background: #000000;
+    border: 3px solid #00FF00;
+    clip-path: none;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+}
+
+body[data-theme="apple2"] .modal-header,
+body[data-theme="apple2"] .modal-footer {
+    border-color: #00FF00;
+}
+
+/* Canvas frames */
+body[data-theme="apple2"] .panel-frame,
+body[data-theme="apple2"] .canvas-frame,
+body[data-theme="apple2"] .stats-frame {
+    background: #000000;
+    border: 2px solid #00FF00;
+}
+
+/* Component palette & properties panel */
+body[data-theme="apple2"] .component-palette,
+body[data-theme="apple2"] .properties-panel {
+    background: #000000;
+    border: 2px solid #00FF00;
+}
+
+body[data-theme="apple2"] .component-item {
+    background: #000000;
+    border: 1px solid #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+body[data-theme="apple2"] .component-item:hover {
+    background: rgba(0, 255, 0, 0.2);
+    border-color: #00FF00;
+}
+
+body[data-theme="apple2"] .component-item.selected {
+    background: #00AA00;
+    color: #000000;
+}
+
+/* Canvas toolbar */
+body[data-theme="apple2"] .canvas-toolbar {
+    background: #000000;
+    border-color: #00FF00;
+}
+
+body[data-theme="apple2"] .tool-btn {
+    background: #000000;
+    border: 2px solid #00FF00;
+    color: #00FF00;
+}
+
+body[data-theme="apple2"] .tool-btn:hover {
+    background: #00FF00;
+    color: #000000;
+}
+
+body[data-theme="apple2"] .tool-btn.active {
+    background: #00AA00;
+    color: #000000;
+}
+
+body[data-theme="apple2"] .snap-select {
+    background: #000000;
+    border: 2px solid #00FF00;
+    color: #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+/* Designer canvas area */
+body[data-theme="apple2"] .designer-canvas-area {
+    background: #000000;
+    border: 3px solid #00FF00;
+}
+
+/* Scrollbars */
+body[data-theme="apple2"] .properties-content::-webkit-scrollbar-thumb,
+body[data-theme="apple2"] .component-list::-webkit-scrollbar-thumb {
+    background: #00FF00;
+}
+
+body[data-theme="apple2"] .properties-content::-webkit-scrollbar-track,
+body[data-theme="apple2"] .component-list::-webkit-scrollbar-track {
+    background: #001100;
+}
+
+/* Form info panels */
+body[data-theme="apple2"] .form-info {
+    background: #000000;
+    border-left: 3px solid #00FF00;
+}
+
+/* Text colors */
+body[data-theme="apple2"] h1,
+body[data-theme="apple2"] h2,
+body[data-theme="apple2"] h3,
+body[data-theme="apple2"] h4,
+body[data-theme="apple2"] h5,
+body[data-theme="apple2"] h6 {
+    color: #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+body[data-theme="apple2"] p,
+body[data-theme="apple2"] span,
+body[data-theme="apple2"] label,
+body[data-theme="apple2"] div {
+    color: #00FF00;
+}
+
+/* Icons and special elements */
+body[data-theme="apple2"] .icon-btn {
+    color: #00FF00;
+}
+
+body[data-theme="apple2"] .icon-btn:hover {
+    color: #00FF00;
+    filter: brightness(1.5);
+}
+
+/* Stats display */
+body[data-theme="apple2"] .die-stat-label,
+body[data-theme="apple2"] .die-stat-value {
+    color: #00FF00;
+}
+
+body[data-theme="apple2"] .die-card-type {
+    color: #00AA00;
+}
+
+/* Zoom level indicator */
+body[data-theme="apple2"] .zoom-level {
+    color: #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+/* Override primary/secondary button variants */
+body[data-theme="apple2"] .art-deco-button.primary {
+    background: #000000;
+    border: 2px solid #00FF00;
+    color: #00FF00;
+}
+
+body[data-theme="apple2"] .art-deco-button.primary:hover {
+    background: #00FF00;
+    color: #000000;
+}
+
+body[data-theme="apple2"] .art-deco-button.secondary {
+    background: #000000;
+    border: 2px solid #00AA00;
+    color: #00AA00;
+}
+
+body[data-theme="apple2"] .art-deco-button.secondary:hover {
+    background: #00AA00;
+    color: #000000;
+}
+
+/* Phosphor persistence effect - slightly blur text */
+body[data-theme="apple2"] {
+    text-shadow: 0 0 2px rgba(0, 255, 0, 0.3);
+}
+
+/* Stronger glow for headings */
+body[data-theme="apple2"] h1,
+body[data-theme="apple2"] h2,
+body[data-theme="apple2"] .game-title {
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}

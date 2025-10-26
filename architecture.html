@@ -2,30 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Silicon Tycoon - Architecture</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/architecture.css">
+    <link id="theme-retro-css" rel="stylesheet" href="css/theme-retro.css" disabled>
+    <link id="theme-apple2-css" rel="stylesheet" href="css/theme-apple2.css" disabled>
+    <link rel="stylesheet" href="css/theme-selector.css">
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <header class="art-deco-header">
+            <!-- Radial Theme Selector -->
+            <div class="theme-selector-container">
+                <button id="theme-brush-btn" class="theme-brush-btn" title="Change Theme">🖌️</button>
+                <div id="theme-wheel" class="theme-wheel" style="display: none;">
+                    <button class="theme-wheel-btn" data-theme="deco" title="CyberDeco">💎</button>
+                    <button class="theme-wheel-btn" data-theme="retro" title="TVA">📼</button>
+                    <button class="theme-wheel-btn" data-theme="apple2" title="Apple II">🖥️</button>
+                </div>
+            </div>
             <div class="header-decoration top"></div>
             <h1 class="game-title">SILICON TYCOON</h1>
-            <h2 class="subtitle">Die Architecture</h2>
             <div class="header-decoration bottom"></div>
+            <h2 class="subtitle">Die Architecture</h2>
 
             <!-- Navigation Buttons -->
             <nav class="screen-navigation">
+                <a href="index.html" style="text-decoration: none;">
+                    <button class="nav-button" data-screen="menu">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-label">MENU</span>
+                    </button>
+                </a>
                 <button class="nav-button active" data-screen="architecture">
                     <span class="nav-icon">📐</span>
                     <span class="nav-label">ARCHITECTURE</span>
                 </button>
-                <a href="index.html" style="text-decoration: none;">
+                <a href="wafer.html" style="text-decoration: none;">
                     <button class="nav-button" data-screen="wafer">
                         <span class="nav-icon">⚙️</span>
                         <span class="nav-label">WAFER</span>
@@ -136,7 +154,7 @@
         <div id="die-designer-view" class="screen-view" style="display: none;">
             <div class="designer-layout">
                 <!-- Component Palette (Left) -->
-                <aside class="component-palette">
+                <aside class="component-palette themed-panel-bg beefy-border-panel chevron-corners-medium border-glow-animated">
                     <div class="palette-header">
                         <h4>PROCESS NODE</h4>
                     </div>
@@ -163,7 +181,15 @@
                         <button class="tool-btn" id="copy-tool" title="Copy Component">📋</button>
                         <button class="tool-btn" id="delete-tool" title="Delete">🗑️</button>
                         <div class="toolbar-divider"></div>
-                        <span class="zoom-level">100%</span>
+                        <label for="snap-size" style="font-size: 16px; margin-right: 5px;" title="Grid Snap Size">🧲</label>
+                        <select id="snap-size" class="snap-select" title="Grid Snap Size">
+                            <option value="0.1">0.1mm</option>
+                            <option value="0.25">0.25mm</option>
+                            <option value="0.5" selected>0.5mm</option>
+                            <option value="1">1mm</option>
+                            <option value="2">2mm</option>
+                            <option value="5">5mm</option>
+                        </select>
                     </div>
                     <div id="designer-canvas" class="designer-canvas">
                         <!-- PixiJS canvas for die design -->
@@ -171,7 +197,7 @@
                 </main>
 
                 <!-- Properties Panel (Right) -->
-                <aside class="properties-panel">
+                <aside class="properties-panel themed-panel-bg beefy-border-panel chevron-corners-medium border-glow-animated">
                     <div class="panel-header">
                         <h4>PROPERTIES</h4>
                     </div>
@@ -208,6 +234,6 @@
     </script>
 
     <!-- Load our modules -->
-    <script type="module" src="js/architecture.js?v=19"></script>
+    <script type="module" src="js/architecture.js?v=30"></script>
 </body>
 </html>

@@ -63,20 +63,38 @@ Then open: http://localhost:8000/architecture.html
 - **Design**: Art Deco themed UI
 - **Fonts**: Poiret One & Montserrat from Google Fonts
 
+## Documentation
+
+- **[README.md](README.md)** (this file) - Getting started guide
+- **[FEATURES.md](FEATURES.md)** - Technical reference for all features (formulas, algorithms, data structures)
+- **[PLANNING.md](PLANNING.md)** - Development roadmap with progress tracking
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+- **[REFACTOR_SUMMARY.md](REFACTOR_SUMMARY.md)** - CSS theme architecture refactor details
+
 ## Project Structure
 
 ```
 Silicon Tycoon/
-├── architecture.html          # Die designer (main screen)
+├── index.html                # Landing page / menu
+├── architecture.html         # Die designer screen
+├── wafer.html                # Wafer planning screen
 ├── css/
 │   ├── style.css             # Global Art Deco theme
+│   ├── theme-retro.css       # Retro 60s-70s theme
 │   └── architecture.css      # Designer-specific styles
 ├── js/
 │   ├── constants.js          # Process nodes, densities, power tables
 │   ├── dieLibrary.js         # Die data management
 │   ├── dieDesigner.js        # PixiJS canvas controller
-│   └── architecture.js       # Main app + performance engine
-├── PLANNING.md               # Detailed design document
+│   ├── architecture.js       # Main app + performance engine
+│   ├── waferPlanner.js       # Wafer yield calculations
+│   ├── renderer.js           # Wafer visualization
+│   ├── physics.js            # Physics engine
+│   ├── themeManager.js       # Theme switching system
+│   └── main.js               # Wafer app entry point
+├── FEATURES.md               # Technical feature documentation
+├── PLANNING.md               # Development roadmap
+├── CHANGELOG.md              # Version history
 └── README.md                 # This file
 ```
 
@@ -89,11 +107,12 @@ No build process required - just open the HTML files in a browser. The game uses
 - `js/constants.js` - Industry data and simulation parameters
 - `js/architecture.js` - Performance calculation engine
 - `js/dieDesigner.js` - Canvas interaction and rendering
-- `PLANNING.md` - Detailed feature specifications
+- **[FEATURES.md](FEATURES.md)** - Detailed technical specifications
+- **[PLANNING.md](PLANNING.md)** - Implementation roadmap
 
 ## Roadmap
 
-See `PLANNING.md` for the complete implementation roadmap.
+See **[PLANNING.md](PLANNING.md)** for the complete development roadmap with progress tracking.
 
 **Phase 1**: Wafer Planning (Next)
 **Phase 2**: Fabrication Lines
@@ -107,8 +126,8 @@ All rights reserved.
 
 ## Version
 
-Current: v19 (Architecture phase complete)
+Current: v0.2.0 Alpha (Architecture complete, Wafer Planning 50% complete)
 
 ---
 
-**Last Updated**: 2025-10-24
+**Last Updated**: 2025-10-26
