@@ -109,13 +109,23 @@ class SiliconTycoonApp {
     }
 
     /**
-     * Populate reticle size dropdown
+     * Populate reticle size dropdown (optionally filtered by process node)
      */
-    populateReticleSizes() {
+    populateReticleSizes(processNode = null) {
         const select = document.getElementById('reticle-size');
+        const currentValue = select.value;
         select.innerHTML = '';
 
-        RETICLE_SIZES.forEach(reticle => {
+        let compatibleReticles = RETICLE_SIZES;
+
+        // Filter by process node compatibility if specified
+        if (processNode !== null) {
+            compatibleReticles = RETICLE_SIZES.filter(reticle => {
+                return processNode >= reticle.maxNode && processNode <= reticle.minNode;
+            });
+        }
+
+        compatibleReticles.forEach(reticle => {
             const option = document.createElement('option');
             option.value = `${reticle.width}x${reticle.height}`;
             option.textContent = `${reticle.label} (${reticle.year})`;
@@ -123,6 +133,14 @@ class SiliconTycoonApp {
             option.dataset.height = reticle.height;
             select.appendChild(option);
         });
+
+        // Try to restore previous selection if it's still compatible
+        if (currentValue) {
+            const stillExists = Array.from(select.options).some(opt => opt.value === currentValue);
+            if (stillExists) {
+                select.value = currentValue;
+            }
+        }
     }
 
     /**
@@ -225,6 +243,10 @@ class SiliconTycoonApp {
                     const selectedOption = select.options[select.selectedIndex];
                     const defectDensity = parseFloat(selectedOption.dataset.defectDensity);
                     this.planner.config.baseDefectDensity = defectDensity;
+
+                    // Update reticle options based on selected process node
+                    const processNode = parseFloat(select.value);
+                    this.populateReticleSizes(processNode);
                 }
             });
         });
@@ -253,6 +275,9 @@ class SiliconTycoonApp {
         document.getElementById('die-width').value = die.dimensions.width;
         document.getElementById('die-height').value = die.dimensions.height;
         document.getElementById('process-node').value = die.processNode || 7;
+
+        // Update reticle options for this process node
+        this.populateReticleSizes(die.processNode || 7);
 
         // Disable manual entry when die is selected
         document.getElementById('die-width').disabled = true;

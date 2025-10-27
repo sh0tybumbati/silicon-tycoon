@@ -298,18 +298,19 @@ export const CHIP_CLASSIFICATION_CRITERIA = {
 export const EDGE_EXCLUSION_MM = 3;
 
 // Reticle sizes (stepper/scanner field sizes in mm) - Historical progression
+// Each reticle is compatible with specific process node ranges based on lithography technology
 export const RETICLE_SIZES = [
-    { width: 10, height: 10, year: 1970, label: '10mm × 10mm (Early Contact Aligner)', type: 'Contact' },
-    { width: 15, height: 15, year: 1975, label: '15mm × 15mm (Contact Aligner)', type: 'Contact' },
-    { width: 14, height: 14, year: 1980, label: '14mm × 14mm (Early Stepper)', type: 'Stepper' },
-    { width: 17, height: 17, year: 1985, label: '17mm × 17mm (Stepper)', type: 'Stepper' },
-    { width: 20, height: 20, year: 1990, label: '20mm × 20mm (Stepper)', type: 'Stepper' },
-    { width: 22, height: 22, year: 1995, label: '22mm × 22mm (Standard Stepper)', type: 'Stepper' },
-    { width: 22, height: 26, year: 2000, label: '22mm × 26mm (Scanner)', type: 'Scanner' },
-    { width: 26, height: 33, year: 2005, label: '26mm × 33mm (Large Field Scanner)', type: 'Scanner' },
-    { width: 26, height: 32, year: 2010, label: '26mm × 32mm (ArF Immersion)', type: 'ArF' },
-    { width: 26, height: 33, year: 2015, label: '26mm × 33mm (ArF Immersion)', type: 'ArF' },
-    { width: 26, height: 33, year: 2020, label: '26mm × 33mm (EUV)', type: 'EUV' }
+    { width: 10, height: 10, year: 1970, label: '10mm × 10mm (Early Contact Aligner)', type: 'Contact', minNode: 10000, maxNode: 3000 },
+    { width: 15, height: 15, year: 1975, label: '15mm × 15mm (Contact Aligner)', type: 'Contact', minNode: 6000, maxNode: 1500 },
+    { width: 14, height: 14, year: 1980, label: '14mm × 14mm (Early Stepper)', type: 'Stepper', minNode: 3000, maxNode: 800 },
+    { width: 17, height: 17, year: 1985, label: '17mm × 17mm (Stepper)', type: 'Stepper', minNode: 1500, maxNode: 350 },
+    { width: 20, height: 20, year: 1990, label: '20mm × 20mm (Stepper)', type: 'Stepper', minNode: 1000, maxNode: 180 },
+    { width: 22, height: 22, year: 1995, label: '22mm × 22mm (Standard Stepper)', type: 'Stepper', minNode: 600, maxNode: 90 },
+    { width: 22, height: 26, year: 2000, label: '22mm × 26mm (Scanner)', type: 'Scanner', minNode: 250, maxNode: 45 },
+    { width: 26, height: 33, year: 2005, label: '26mm × 33mm (Large Field Scanner)', type: 'Scanner', minNode: 130, maxNode: 22 },
+    { width: 26, height: 32, year: 2010, label: '26mm × 32mm (ArF Immersion)', type: 'ArF', minNode: 65, maxNode: 10 },
+    { width: 26, height: 33, year: 2015, label: '26mm × 33mm (ArF Immersion)', type: 'ArF', minNode: 32, maxNode: 7 },
+    { width: 26, height: 33, year: 2020, label: '26mm × 33mm (EUV)', type: 'EUV', minNode: 14, maxNode: 3 }
 ];
 
 // Physics constants
