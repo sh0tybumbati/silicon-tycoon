@@ -202,11 +202,11 @@ export const LEAKAGE_PER_M_TRANSISTORS = {
 // BALANCED: Increased to reflect modern cooling capabilities
 // Modern tower coolers and AIOs can handle higher densities at smaller nodes
 export const THERMAL_LIMITS = {
-    consumer_cpu: 1.00,     // Consumer desktop CPU - modern cooling handles 0.8-1.2 W/mm²
-    server_cpu: 1.20,       // Server CPU with better cooling and larger heatsinks
-    laptop_cpu: 0.60,       // Laptop CPU (thermal constrained but improved)
-    gpu: 0.65,              // GPU (large area, challenging cooling)
-    mobile_soc: 0.40        // Mobile SoC (very thermal constrained)
+    consumer_cpu: 1.30,     // Consumer desktop CPU - high-end AIOs handle 1.0-1.5 W/mm²
+    server_cpu: 1.50,       // Server CPU with better cooling and larger heatsinks
+    laptop_cpu: 0.70,       // Laptop CPU (thermal constrained but improved)
+    gpu: 0.80,              // GPU (large area, challenging cooling)
+    mobile_soc: 0.45        // Mobile SoC (very thermal constrained)
 };
 
 // Interconnect requirements: which components need to communicate

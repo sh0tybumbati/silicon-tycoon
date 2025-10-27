@@ -1167,9 +1167,9 @@ class ArchitectureApp {
             const activityFactor = activityFactors[comp.type] || 0.25;
 
             // Dynamic power: C * V² * f * α (Capacitance * Voltage² * Frequency * Activity)
-            // Base: ~15W per billion transistors at 1GHz at 0.75V with 100% activity
-            // We scale by actual activity factor
-            const basePowerPerBTransistor = 15.0; // At 100% activity
+            // Base: ~12W per billion transistors at 1GHz at 0.75V with 100% activity
+            // Modern nodes have lower capacitance per transistor due to smaller features
+            const basePowerPerBTransistor = 12.0; // At 100% activity (reduced from 15W)
             const voltageScaling = (voltage / 0.75) ** 2;
             const frequencyScaling = baseClockGHz;
 
