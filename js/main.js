@@ -5,7 +5,7 @@ import { WaferPlanner } from './waferPlanner.js';
 import { WaferRenderer } from './renderer.js';
 import { formatNumber } from './physics.js';
 import { initTheme, setupThemeSelector } from './themeManager.js';
-import { getDieLibrary, getDieById } from './dieLibrary.js';
+import { getDieLibrary } from './dieLibrary.js';
 import { loadBatchPlans, getBatchPlans, addBatchPlan, deleteBatchPlan, BatchPlan } from './batchPlanner.js';
 
 class SiliconTycoonApp {
@@ -130,6 +130,7 @@ class SiliconTycoonApp {
      */
     populateDieLibrary() {
         const select = document.getElementById('die-select');
+        console.log('[WaferPlanner] Populating die library dropdown');
 
         // Clear all options
         select.innerHTML = '';
@@ -139,10 +140,15 @@ class SiliconTycoonApp {
         manualOption.value = '';
         manualOption.textContent = '-- Manual Entry --';
         select.appendChild(manualOption);
+        console.log('[WaferPlanner] Added manual entry option');
 
         // Add all dies from library
         const library = getDieLibrary();
+        console.log('[WaferPlanner] Got library:', library);
         const dies = library.getAllDies();
+        console.log('[WaferPlanner] Got dies array, length:', dies.length);
+        console.log('[WaferPlanner] Dies:', dies);
+
         dies.forEach(die => {
             const option = document.createElement('option');
             option.value = die.id;
@@ -151,7 +157,10 @@ class SiliconTycoonApp {
             option.dataset.height = die.dimensions.height;
             option.dataset.processNode = die.processNode;
             select.appendChild(option);
+            console.log('[WaferPlanner] Added die:', die.sku);
         });
+
+        console.log('[WaferPlanner] Dropdown population complete, total options:', select.options.length);
     }
 
     /**

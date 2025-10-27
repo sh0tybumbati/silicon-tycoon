@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Die Dropdown</title>
+</head>
+<body>
+    <h1>Die Dropdown Test</h1>
+    <select id="die-select">
+        <option value="">-- Manual Entry --</option>
+    </select>
+    <pre id="output"></pre>
+
+    <script type="module">
+        import { getDieLibrary } from './js/dieLibrary.js';
+
+        const output = document.getElementById('output');
+        const select = document.getElementById('die-select');
+
+        try {
+            output.textContent += 'Getting die library...\n';
+            const library = getDieLibrary();
+            output.textContent += `Library object: ${library}\n`;
+            output.textContent += `Library type: ${typeof library}\n`;
+            output.textContent += `Library constructor: ${library.constructor.name}\n`;
+
+            output.textContent += '\nCalling getAllDies()...\n';
+            const dies = library.getAllDies();
+            output.textContent += `Dies array length: ${dies.length}\n`;
+            output.textContent += `Dies: ${JSON.stringify(dies, null, 2)}\n`;
+
+            // Populate dropdown
+            dies.forEach(die => {
+                const option = document.createElement('option');
+                option.value = die.id;
+                option.textContent = `${die.sku} (${die.dimensions.width}×${die.dimensions.height}mm, ${die.processNode}nm)`;
+                select.appendChild(option);
+            });
+
+            output.textContent += `\nDropdown populated with ${dies.length} dies\n`;
+        } catch (e) {
+            output.textContent += `\nERROR: ${e.message}\n`;
+            output.textContent += `Stack: ${e.stack}\n`;
+        }
+    </script>
+</body>
+</html>
