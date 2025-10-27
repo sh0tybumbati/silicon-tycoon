@@ -194,19 +194,19 @@ export const LEAKAGE_PER_M_TRANSISTORS = {
     12: 0.007,       // Reduced from 0.017 - peak leakage before mitigation
     10: 0.004,       // FinFET adoption - leakage controlled, better than pre-FinFET
     7: 0.003,        // Advanced FinFET - superior leakage control
-    5: 0.0025,       // GAA transistors - excellent leakage control
-    3: 0.002         // Advanced GAA + power gating - best-in-class efficiency
+    5: 0.002,        // GAA transistors - excellent leakage control (reduced from 0.0025)
+    3: 0.0015        // Advanced GAA + power gating - best-in-class efficiency (reduced from 0.002)
 };
 
 // Thermal limits by chip type (W/mm²)
 // BALANCED: Increased to reflect modern cooling capabilities
 // Modern tower coolers and AIOs can handle higher densities at smaller nodes
 export const THERMAL_LIMITS = {
-    consumer_cpu: 1.30,     // Consumer desktop CPU - high-end AIOs handle 1.0-1.5 W/mm²
-    server_cpu: 1.50,       // Server CPU with better cooling and larger heatsinks
-    laptop_cpu: 0.70,       // Laptop CPU (thermal constrained but improved)
-    gpu: 0.80,              // GPU (large area, challenging cooling)
-    mobile_soc: 0.45        // Mobile SoC (very thermal constrained)
+    consumer_cpu: 1.50,     // Consumer desktop CPU - high-end AIOs handle 1.2-1.8 W/mm²
+    server_cpu: 1.80,       // Server CPU with better cooling and larger heatsinks
+    laptop_cpu: 0.80,       // Laptop CPU (thermal constrained but improved)
+    gpu: 0.90,              // GPU (large area, challenging cooling)
+    mobile_soc: 0.50        // Mobile SoC (very thermal constrained)
 };
 
 // Interconnect requirements: which components need to communicate
