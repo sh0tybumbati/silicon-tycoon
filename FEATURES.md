@@ -602,6 +602,316 @@ Each wafer is individually "rolled" with randomized defects based on:
 
 ---
 
+## Contract Manufacturing System (Planned)
+
+**Overview**: Fabless designers can contract out manufacturing to AI-controlled foundries. Players can also own foundries and accept contracts from AI design firms. The system simulates the real semiconductor industry's fabless/foundry business model.
+
+**Business Models** (Player can choose or do both):
+
+1. **Fabless Designer** (AMD, NVIDIA, Apple, Qualcomm model):
+   - Design chips in-house using Architecture screen
+   - Contract out fabrication/binning/packaging
+   - Low capital requirements
+   - Focus on IP and architecture
+
+2. **Contract Foundry** (TSMC, GlobalFoundries, UMC model):
+   - Own fabrication equipment and cleanrooms
+   - Accept contracts from design firms
+   - High capital requirements
+   - Focus on manufacturing excellence and yield
+
+3. **Integrated (IDM)** (Intel, Samsung model):
+   - Design own chips AND run foundry services
+   - Highest capital requirements
+   - Compete in both design and manufacturing
+   - Can prioritize internal or external customers
+
+**AI-Controlled Foundries**:
+
+Based on real companies with historical accuracy:
+- **TSMC** (1987+): Premium quality, premium pricing, all modern nodes
+- **GlobalFoundries** (2009+): Competitive pricing, stopped at 14nm in 2018
+- **UMC** (1980+): Budget-friendly, trailing-edge focus
+- **SMIC** (2000+): Chinese foundry, government-backed, US sanctions affect node access
+- **Samsung Foundry** (2017+): 2nd-gen FinFET, GAA leader
+- **Intel Foundry Services** (2021+): Legacy IDM enters foundry market
+- **Tower Semiconductor** (1993+): Specialty processes (analog, power, sensors)
+
+Each foundry has:
+- **Available Nodes**: Based on historical R&D progression
+- **Services**: Fabrication, binning, packaging, or full turnkey
+- **Quality Multiplier**: Affects yield (TSMC +15%, budget fabs -5%)
+- **Pricing Multiplier**: Market positioning (premium vs. cost leader)
+- **Capacity**: Weekly wafer throughput (scales with time)
+- **Reputation**: 0-100 score affecting customer trust
+
+**Contract Types**:
+
+1. **Spot Order** (Immediate, single batch):
+   - Book 1 wafer run on-demand
+   - Pay market rate + 10% spot premium
+   - No commitment required
+   - Subject to available capacity
+   - Use case: Prototyping, testing, low volume
+
+2. **Short-term Contract** (13-52 weeks):
+   - Reserve X wafers/week for up to 1 year
+   - Fixed price locked at signing
+   - 10% deposit required upfront
+   - Cancellation fee: 25% of remaining value
+   - Use case: Product ramp, market testing
+
+3. **Long-term Contract** (52-260 weeks / 1-5 years):
+   - Reserve capacity for multi-year volume production
+   - Volume discount: 5-20% off spot rate (based on volume + duration)
+   - 20% deposit required upfront
+   - Better yield priority (mature process assignments)
+   - Price protection against market fluctuations
+   - Use case: Flagship products, sustained volume
+
+**Contract Data Structure**:
+```javascript
+{
+  id: 'contract_2024_tsmc_001',
+  type: 'long-term',
+
+  // Parties
+  foundryId: 'tsmc',
+  foundryName: 'TSMC',
+  customerId: 'player', // or AI company ID
+
+  // Production Specifications
+  dieId: 'zen5_ccd',
+  processNode: 7,
+  waferSize: 300,
+  wafersPerWeek: 1000,
+  services: ['fabrication', 'binning', 'packaging'], // or 'turnkey'
+
+  // Timeline (in weeks from game start)
+  signedWeek: 2600,
+  startWeek: 2608, // +8 weeks lead time
+  endWeek: 2764,   // +156 weeks = 3 years
+  durationWeeks: 156,
+
+  // Pricing
+  basePricePerWafer: 30000,      // $30k spot rate for 7nm
+  discountPercent: 15,            // -15% for long-term volume
+  pricePerWafer: 25500,          // $25.5k contracted
+
+  // Financials
+  totalWafers: 156000,            // 1000/week × 156 weeks
+  totalValue: 3978000000,         // $3.978 billion
+  depositPercent: 20,
+  depositPaid: 795600000,         // $795.6M
+  amountPaid: 1200000000,         // $1.2B paid so far
+  remainingBalance: 2778000000,   // $2.778B remaining
+
+  // Progress
+  status: 'active',               // pending | active | completed | cancelled
+  weeksElapsed: 47,
+  wafersCompleted: 47000,
+  wafersRemaining: 109000,
+  diesDelivered: 1645000,         // binned + packaged
+
+  // Quality Metrics
+  averageYield: 0.78,             // 78% average yield
+  defectRate: 0.008,              // defects/cm²
+
+  // Deliverables (if binning/packaging included)
+  binningComplete: true,
+  packagingComplete: true,
+  skusProduced: {
+    'zen5_8c': 850000,            // 8-core SKU
+    'zen5_6c': 450000,            // 6-core SKU
+    'zen5_4c': 345000             // 4-core SKU
+  },
+
+  // Terms
+  cancellationFee: 0.25,          // 25% of remaining
+  yieldGuarantee: 0.70,           // Foundry guarantees 70%+ yield
+  penaltyPerWaferBelowGuarantee: 1000,
+
+  // Events Log
+  events: [
+    { week: 2600, type: 'signed', note: 'Contract signed' },
+    { week: 2608, type: 'started', note: 'First wafer lot started' },
+    { week: 2650, type: 'milestone', note: '50k wafers completed' }
+  ]
+}
+```
+
+**Pricing Formula**:
+```
+Spot Price = Base Node Cost × Foundry Pricing Multiplier × Wafer Size Factor
+
+Short-term Discount = -5% to -10% (based on volume)
+Long-term Discount = -10% to -20% (based on volume × duration)
+
+Service Add-ons:
+- Binning: +$50-500 per die (based on complexity)
+- Packaging: +$0.50-5.00 per die (based on package type)
+- Turnkey: Bundled discount -5%
+```
+
+**Foundry Selection Factors**:
+- **Node Capability**: Does foundry support your process node?
+- **Capacity**: Can they handle your volume?
+- **Quality**: Higher yield = fewer defective dies
+- **Price**: Spot vs. contract rates
+- **Lead Time**: How soon can they start?
+- **Reputation**: Track record of on-time delivery
+- **Geographic Risk**: Tariffs, sanctions, geopolitical stability
+- **Technology Leadership**: Cutting-edge vs. trailing-edge
+
+**Market Dynamics**:
+
+**Supply & Demand**:
+- Popular nodes get booked up (high demand)
+- Older nodes have excess capacity (low demand)
+- Spot prices fluctuate based on utilization
+- Long-term contracts lock in prices
+
+**Foundry Competition**:
+- AI foundries compete for contracts
+- Lower prices when capacity is idle
+- Raise prices when demand exceeds supply
+- Invest in new nodes based on profitability
+
+**Customer Relationships**:
+- Repeat customers get priority allocation
+- Contract fulfillment builds reputation
+- Failed deliveries damage reputation
+- VIP status for high-volume customers
+
+---
+
+## Player-Owned Foundry System (Planned)
+
+**Overview**: Players can build and operate their own fabrication facilities, competing with AI foundries for contracts from AI design firms.
+
+**Foundry Setup**:
+
+1. **Purchase Cleanroom Facility**:
+   - Buy or lease manufacturing space
+   - Size: 10,000 - 500,000 m² cleanroom
+   - Cost: $500M - $20B (scales with size and class)
+   - Cleanroom classes: Class 1 (3nm-7nm), Class 10 (14nm-22nm), Class 100 (older nodes)
+
+2. **Buy Equipment**:
+   - Lithography tools (most expensive)
+   - Etching systems
+   - Deposition tools
+   - Metrology equipment
+   - CMP systems
+
+**Equipment Catalog Example**:
+
+**Lithography Tools**:
+```javascript
+{
+  name: 'ASML Twinscan NXT:2000i (ArF Immersion)',
+  manufacturer: 'ASML',
+  type: 'lithography',
+  year: 2016,
+  purchaseCost: 120000000,        // $120M
+  usedCost: 60000000,             // $60M (5+ years old)
+  supportedNodes: [14, 10, 7],
+  throughput: 275,                 // wafers/hour
+  wavelength: '193nm ArF',
+  resolution: '38nm',
+
+  // Operating Costs (per week)
+  maintenanceCost: 100000,         // $100k/week
+  powerConsumption: 850,           // kW
+  consumablesCost: 50000,          // $50k/week (gases, chemicals)
+  technicianHours: 168,            // 24/7 operation
+
+  // Physical
+  floorSpace: 120,                 // m²
+  weightTons: 180,
+  powerRequirement: '1.5 MVA',
+
+  // Reliability
+  uptime: 0.95,                    // 95% uptime
+  mtbf: 720,                       // hours between failures
+
+  // Capabilities
+  immersion: true,
+  multiPatterning: true,
+  overlaySigma: 1.3                // nm (overlay accuracy)
+}
+```
+
+```javascript
+{
+  name: 'ASML Twinscan NXE:3400C (EUV)',
+  manufacturer: 'ASML',
+  type: 'lithography',
+  year: 2018,
+  purchaseCost: 150000000,         // $150M
+  usedCost: null,                  // Not available used (too new)
+  supportedNodes: [7, 5, 3],
+  throughput: 170,                 // wafers/hour
+  wavelength: '13.5nm EUV',
+  resolution: '13nm',
+
+  maintenanceCost: 250000,         // $250k/week (EUV is expensive)
+  powerConsumption: 1000,          // kW
+  consumablesCost: 150000,         // $150k/week
+  technicianHours: 336,            // 2 shifts 24/7
+
+  floorSpace: 200,
+  weightTons: 250,
+
+  uptime: 0.85,                    // EUV has lower uptime
+  mtbf: 480,
+
+  singlePatterning: true,          // No multi-patterning needed
+  pellicle: false                  // EUV pellicles not ready yet
+}
+```
+
+**Other Equipment Types**:
+- Etching: Lam Research, Applied Materials (~$5M-20M each)
+- Deposition: Applied Materials, Tokyo Electron (~$3M-15M each)
+- CMP: Applied Materials, Ebara (~$2M-8M each)
+- Metrology: KLA-Tencor, Hitachi (~$5M-50M each)
+
+**Staffing**:
+- **Process Engineers**: $150k/year, improve yield
+- **Equipment Technicians**: $80k/year, maintain uptime
+- **Cleanroom Operators**: $50k/year, run tools
+- **Quality Engineers**: $120k/year, catch defects early
+
+**Accepting Contracts**:
+
+1. **Receive RFQ** (Request for Quote) from AI design firm
+2. **Review Specs**: Die design, volume, timeline, services needed
+3. **Calculate Costs**: Equipment time, materials, labor, overhead
+4. **Set Price**: Cost + margin (compete with other foundries)
+5. **Submit Bid**: AI customer evaluates (price, reputation, lead time)
+6. **Win Contract**: If competitive
+7. **Allocate Capacity**: Reserve equipment and cleanroom space
+8. **Execute Production**: Fab → Bin → Package → Deliver
+9. **Invoice Customer**: Weekly or upon delivery
+
+**Reputation System**:
+- **On-time Delivery**: +1 rep per week on schedule
+- **Yield Above Guarantee**: +2 rep per percentage point
+- **Late Delivery**: -5 rep per week late
+- **Yield Below Guarantee**: -10 rep, pay penalty
+- **Contract Cancellation**: -50 rep (devastating)
+
+**Expansion Strategy**:
+- Start small: 1-2 older nodes, 10k m² cleanroom
+- Build reputation with AI customers
+- Reinvest profits into new equipment
+- Add cutting-edge nodes
+- Scale capacity (more tools, bigger cleanroom)
+- Eventually compete with TSMC for flagship products
+
+---
+
 ## Fabrication System (Planned)
 
 **Process Stages** (modern CMOS):

@@ -98,7 +98,71 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ## Development Roadmap
 
-### Phase 3: Fabrication ❌ NOT STARTED
+### Phase 3: Contract Manufacturing & Foundry Market ❌ NOT STARTED
+**Reference**: FEATURES.md: Contract Manufacturing System
+
+**Goals**:
+- ❌ Design foundry database (TSMC, GlobalFoundries, UMC, Samsung, Intel, SMIC, etc.)
+- ❌ Create AI-controlled foundries with historical accuracy (node availability by year)
+- ❌ Implement contract types (Spot, Short-term, Long-term)
+- ❌ Build foundry market UI (browse fabs, compare pricing)
+- ❌ Design contract negotiation interface
+- ❌ Create contract data model and localStorage persistence
+- ❌ Implement pricing formulas (spot rates, discounts, service add-ons)
+- ❌ Add contract progress tracking and invoicing
+- ❌ Build active contracts dashboard
+- ❌ Implement supply & demand dynamics (utilization affects pricing)
+- ❌ Add foundry reputation system
+
+**Key Features**:
+- Browse AI-controlled foundries by node, price, capacity, reputation
+- Book spot orders for prototyping
+- Negotiate multi-year contracts with volume discounts
+- Track contract progress (wafers completed, yield, cost)
+- Service bundles: Fabrication only, +Binning, +Packaging, Full Turnkey
+
+**Files to Create**:
+- `js/foundryMarket.js` - AI foundry definitions and market dynamics
+- `js/contracts.js` - Contract management and fulfillment
+- `market.html` - Foundry marketplace UI
+
+---
+
+### Phase 4: Player-Owned Foundry System ❌ NOT STARTED
+**Reference**: FEATURES.md: Player-Owned Foundry System
+
+**Goals**:
+- ❌ Create equipment catalog (lithography, etching, deposition, CMP, metrology)
+- ❌ Design cleanroom facility purchase/lease system
+- ❌ Implement equipment purchase UI (new vs. used tools)
+- ❌ Add staffing system (engineers, technicians, operators)
+- ❌ Build RFQ (Request for Quote) system from AI design firms
+- ❌ Create contract bidding interface
+- ❌ Implement foundry reputation tracking
+- ❌ Add capacity allocation and scheduling
+- ❌ Design production queue management
+- ❌ Track operating costs (maintenance, power, consumables, labor)
+- ❌ Calculate contract profitability
+- ❌ Add equipment reliability and downtime simulation
+
+**Key Features**:
+- Buy ASML lithography tools ($120M-$150M each)
+- Purchase cleanroom space (10k-500k m²)
+- Hire and manage fab workforce
+- Accept contracts from AI design firms
+- Set competitive pricing
+- Build reputation through quality and delivery
+- Expand capacity over time (reinvest profits)
+- Compete with AI foundries (TSMC, GF, etc.)
+
+**Files to Create**:
+- `js/equipment.js` - Equipment catalog and management
+- `js/playerFoundry.js` - Player foundry operations
+- `foundry.html` - Player foundry management UI
+
+---
+
+### Phase 5: Fabrication Lines ❌ NOT STARTED
 **Reference**: FEATURES.md: Fabrication System
 
 **Goals**:
@@ -118,9 +182,11 @@ This document provides a high-level project management view of Silicon Tycoon de
 - Real-time pipeline visualization
 - Cycle time and throughput calculations
 
+**Note**: This phase is for player-owned fab lines. Contracted manufacturing uses simplified abstraction.
+
 ---
 
-### Phase 4: Binning ❌ NOT STARTED
+### Phase 6: Binning ❌ NOT STARTED
 **Reference**: FEATURES.md: Binning System
 
 **Goals**:
@@ -141,7 +207,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 5: Packaging ❌ NOT STARTED
+### Phase 7: Packaging ❌ NOT STARTED
 **Reference**: FEATURES.md: Packaging System
 
 **Goals**:
@@ -161,7 +227,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 6: PassMark Benchmark Scoring ❌ NOT STARTED
+### Phase 8: PassMark Benchmark Scoring ❌ NOT STARTED
 
 **Goals**:
 - ❌ Research real CPU scores from cpubenchmark.net leaderboards
@@ -193,7 +259,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 7: Component Designer ❌ NOT STARTED
+### Phase 9: Component Designer ❌ NOT STARTED
 
 **Goals**:
 - ❌ Create component designer interface (separate screen)
@@ -268,7 +334,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 8: Architecture Enhancements ❌ NOT STARTED
+### Phase 10: Architecture Enhancements ❌ NOT STARTED
 
 #### A. IPC Calculation System
 **Reference**: FEATURES.md: Advanced IPC Calculation System
