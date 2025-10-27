@@ -4,6 +4,39 @@ This document provides comprehensive technical documentation for all features in
 
 ---
 
+## Game Time System
+
+**Time Scale**: Weeks (52 per year)
+
+Silicon Tycoon uses a **weekly turn-based time progression** system. Each turn represents one week of game time, providing a balance between:
+- **Strategic depth**: Long-term planning for R&D, manufacturing, and market positioning
+- **Reasonable pace**: 52 turns per year allows multi-year campaigns without excessive micromanagement
+- **Realistic timescales**: Semiconductor development cycles align naturally with weeks/months/years
+
+**Time-Based Activities**:
+- **Fabrication**: Wafers take 3-13 weeks to manufacture (20-90 days)
+  - 180nm+: ~3 weeks (20 days)
+  - 90nm-65nm: ~6-7 weeks (45 days)
+  - 32nm-22nm: ~9 weeks (60 days)
+  - 14nm-10nm: ~11 weeks (75 days)
+  - 7nm-3nm: ~13 weeks (90 days)
+- **Process R&D**: New process node development takes 52-156 weeks (1-3 years)
+- **Process Maturity**: Matures over 18-52 weeks (4-12 months)
+  - New (0-13 weeks): 75% base yield
+  - Early (13-26 weeks): 100% base yield
+  - Mature (26-78 weeks): 115% base yield
+  - Optimized (78+ weeks): 125% base yield
+- **Design Cycles**: New architecture designs take 26-52 weeks (6-12 months)
+- **Market Cycles**: Product launches, reviews, and sales occur on weekly intervals
+- **Financial Reporting**: Quarterly reports every 13 weeks
+
+**Why Weeks?**
+- Daily turns would be too granular for a strategic game (18,250 turns for 50 years!)
+- Monthly turns would be too coarse for manufacturing and market dynamics
+- Weekly turns provide ~2,600 turns for a 50-year campaign - enough for depth without tedium
+
+---
+
 ## Process Nodes
 
 **Supported Nodes**: 10μm (1971) to 3nm (2022) - 22 total nodes

@@ -416,7 +416,7 @@ class SiliconTycoonApp {
 
         // Time per wafer (estimate based on process node complexity)
         const timePerWafer = this.estimateWaferTime(processNode);
-        document.getElementById('time-per-wafer').textContent = `${timePerWafer} days`;
+        document.getElementById('time-per-wafer').textContent = `${timePerWafer} weeks`;
 
         // Yield breakdown
         const breakdown = stats.yieldBreakdown;
@@ -445,15 +445,17 @@ class SiliconTycoonApp {
 
     /**
      * Estimate fabrication time per wafer based on process node
+     * Returns time in weeks (game uses weekly turns, 52 per year)
      */
     estimateWaferTime(processNode) {
         // More advanced nodes require more processing steps and take longer
-        if (processNode <= 5) return 90; // 3nm-5nm: ~90 days
-        if (processNode <= 10) return 75; // 7nm-10nm: ~75 days
-        if (processNode <= 22) return 60; // 14nm-22nm: ~60 days
-        if (processNode <= 65) return 45; // 32nm-65nm: ~45 days
-        if (processNode <= 180) return 30; // 90nm-180nm: ~30 days
-        return 20; // 250nm+: ~20 days
+        // Convert days to weeks (rounded to nearest week)
+        if (processNode <= 5) return 13;  // 3nm-5nm: ~90 days = 13 weeks
+        if (processNode <= 10) return 11; // 7nm-10nm: ~75 days = 11 weeks
+        if (processNode <= 22) return 9;  // 14nm-22nm: ~60 days = 9 weeks
+        if (processNode <= 65) return 6;  // 32nm-65nm: ~45 days = 6 weeks
+        if (processNode <= 180) return 4; // 90nm-180nm: ~30 days = 4 weeks
+        return 3; // 250nm+: ~20 days = 3 weeks
     }
 
     /**

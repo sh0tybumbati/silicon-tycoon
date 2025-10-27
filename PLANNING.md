@@ -14,6 +14,12 @@ This document provides a high-level project management view of Silicon Tycoon de
 - Architecture: ES6 Modules
 - Storage: Browser localStorage with auto-recovery
 
+**Game Time System**:
+- **Timescale**: Weekly turns (52 per year)
+- Each turn = 1 week of game time
+- Provides strategic depth without excessive micromanagement
+- See FEATURES.md: Game Time System for full details
+
 ---
 
 ## Current Implementation Status
