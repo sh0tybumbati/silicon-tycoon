@@ -772,3 +772,60 @@
     background: var(--magenta-primary);
 }
 
+/* ==================== VANILLA THEME OVERRIDES ==================== */
+
+/* Override dark backgrounds with light vanilla style */
+body.theme-vanilla .component-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+body.theme-vanilla .component-item:hover {
+    background: var(--bg);
+    border-color: var(--primary);
+}
+
+body.theme-vanilla .component-item.selected {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--black);
+}
+
+body.theme-vanilla .designer-canvas-area {
+    background: var(--bg);
+    border: 2px solid var(--border);
+}
+
+body.theme-vanilla .canvas-toolbar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+body.theme-vanilla .tool-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+body.theme-vanilla .tool-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+body.theme-vanilla .tool-btn.active {
+    background: var(--primary);
+    border-color: var(--primary-dark);
+    color: white;
+}
+
+body.theme-vanilla .component-palette {
+    background: var(--bg);
+    border-color: var(--border);
+}
+
+body.theme-vanilla .properties-panel {
+    background: var(--bg);
+    border-color: var(--border);
+}
+
