@@ -169,9 +169,10 @@ export const NODE_VOLTAGE = {
 };
 
 // Leakage power per million transistors (Watts) - static power consumption
-// Smaller nodes have worse leakage due to quantum tunneling
+// Smaller nodes have worse leakage due to quantum tunneling, BUT modern nodes
+// use FinFET, GAA, and power gating to mitigate this
 // Real-world values: modern chips have 10-30W total leakage for billions of transistors
-// BALANCED: Reduced by 60-70% from previous values for realistic gameplay
+// BALANCED: Flattened curve at 10nm and below to reflect real-world efficiency gains
 export const LEAKAGE_PER_M_TRANSISTORS = {
     10000: 0.000001, // 10μm: negligible leakage
     6000: 0.000002,
@@ -190,11 +191,11 @@ export const LEAKAGE_PER_M_TRANSISTORS = {
     32: 0.004,       // Reduced from 0.010
     22: 0.005,       // Reduced from 0.012 - leakage major concern
     14: 0.006,       // Reduced from 0.015 - Real: ~15W leakage for 2.6B transistors = 0.006W/M
-    12: 0.007,       // Reduced from 0.017
-    10: 0.008,       // Reduced from 0.020
-    7: 0.010,        // Reduced from 0.025 - high leakage
-    5: 0.012,        // Reduced from 0.030 - very high leakage
-    3: 0.015         // Reduced from 0.035 - extreme leakage
+    12: 0.007,       // Reduced from 0.017 - peak leakage before mitigation
+    10: 0.006,       // FinFET adoption - leakage controlled
+    7: 0.006,        // Advanced FinFET - similar to 14nm despite smaller size
+    5: 0.006,        // GAA transistors - leakage well controlled
+    3: 0.006         // Advanced GAA + power gating - leakage mitigated
 };
 
 // Thermal limits by chip type (W/mm²)
