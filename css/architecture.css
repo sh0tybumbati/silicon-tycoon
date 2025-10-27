@@ -829,3 +829,54 @@ body.theme-vanilla .properties-panel {
     border-color: var(--border);
 }
 
+/* Additional vanilla overrides for inputs, dropdowns, and modals */
+body.theme-vanilla .search-input,
+body.theme-vanilla .filter-select,
+body.theme-vanilla .snap-select {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    color: var(--text);
+}
+
+body.theme-vanilla .search-input:focus,
+body.theme-vanilla .filter-select:focus,
+body.theme-vanilla .snap-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+body.theme-vanilla .modal-dialog {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    clip-path: none;
+}
+
+body.theme-vanilla .modal-header {
+    border-bottom: 2px solid var(--border);
+}
+
+body.theme-vanilla .modal-header h3 {
+    color: var(--primary);
+}
+
+body.theme-vanilla .modal-close {
+    color: var(--text);
+}
+
+body.theme-vanilla .modal-close:hover {
+    color: var(--primary);
+}
+
+body.theme-vanilla .form-group label {
+    color: var(--text-muted);
+}
+
+body.theme-vanilla .form-info {
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--primary);
+}
+
+body.theme-vanilla .form-info strong {
+    color: var(--primary-dark);
+}
+
