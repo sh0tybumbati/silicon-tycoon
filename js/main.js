@@ -370,6 +370,16 @@ class SiliconTycoonApp {
         const costPerWafer = BatchPlan.getCostPerWafer(processNode);
         document.getElementById('cost-per-wafer').textContent = `$${costPerWafer.toFixed(1)}k`;
 
+        // Cost per die (wafer cost / total dies)
+        const costPerDie = stats.totalDies > 0 ? (costPerWafer * 1000) / stats.totalDies : 0;
+        if (costPerDie >= 1000) {
+            document.getElementById('cost-per-die').textContent = `$${(costPerDie / 1000).toFixed(2)}k`;
+        } else if (costPerDie >= 1) {
+            document.getElementById('cost-per-die').textContent = `$${costPerDie.toFixed(2)}`;
+        } else {
+            document.getElementById('cost-per-die').textContent = `$${costPerDie.toFixed(3)}`;
+        }
+
         // Time per wafer (estimate based on process node complexity)
         const timePerWafer = this.estimateWaferTime(processNode);
         document.getElementById('time-per-wafer').textContent = `${timePerWafer} days`;
