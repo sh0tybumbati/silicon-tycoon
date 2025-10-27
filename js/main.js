@@ -116,14 +116,21 @@ class SiliconTycoonApp {
         const currentValue = select.value;
         select.innerHTML = '';
 
+        console.log('[WaferPlanner] Populating reticles for process node:', processNode);
+        console.log('[WaferPlanner] RETICLE_SIZES:', RETICLE_SIZES);
+
         let compatibleReticles = RETICLE_SIZES;
 
         // Filter by process node compatibility if specified
         if (processNode !== null) {
             compatibleReticles = RETICLE_SIZES.filter(reticle => {
-                return processNode >= reticle.maxNode && processNode <= reticle.minNode;
+                const isCompatible = processNode >= reticle.maxNode && processNode <= reticle.minNode;
+                console.log(`[WaferPlanner] Reticle ${reticle.label}: node=${processNode}, min=${reticle.minNode}, max=${reticle.maxNode}, compatible=${isCompatible}`);
+                return isCompatible;
             });
         }
+
+        console.log('[WaferPlanner] Compatible reticles:', compatibleReticles.length);
 
         compatibleReticles.forEach(reticle => {
             const option = document.createElement('option');
@@ -133,6 +140,8 @@ class SiliconTycoonApp {
             option.dataset.height = reticle.height;
             select.appendChild(option);
         });
+
+        console.log('[WaferPlanner] Reticle dropdown populated with', select.options.length, 'options');
 
         // Try to restore previous selection if it's still compatible
         if (currentValue) {
