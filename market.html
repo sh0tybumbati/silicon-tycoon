@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Tycoon - Foundry Market</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link id="theme-deco-css" rel="stylesheet" href="css/theme-deco.css" disabled>
+    <link id="theme-retro-css" rel="stylesheet" href="css/theme-retro.css" disabled>
+    <link id="theme-apple2-css" rel="stylesheet" href="css/theme-apple2.css" disabled>
+    <link rel="stylesheet" href="css/theme-selector.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="art-deco-header">
+            <!-- Radial Theme Selector -->
+            <div class="theme-selector-container">
+                <button id="theme-brush-btn" class="theme-brush-btn" title="Change Theme">🖌️</button>
+                <div id="theme-wheel" class="theme-wheel" style="display: none;">
+                    <button class="theme-wheel-btn" data-theme="vanilla" title="Modern">📊</button>
+                    <button class="theme-wheel-btn" data-theme="deco" title="CyberDeco">💎</button>
+                    <button class="theme-wheel-btn" data-theme="retro" title="TVA">📼</button>
+                    <button class="theme-wheel-btn" data-theme="apple2" title="Apple II">🖥️</button>
+                </div>
+            </div>
+            <div class="header-decoration top"></div>
+            <h1 class="game-title">SILICON TYCOON</h1>
+            <div class="header-decoration bottom"></div>
+            <h2 class="subtitle">Foundry Market</h2>
+
+            <!-- Navigation Buttons -->
+            <nav class="screen-navigation">
+                <a href="index.html" style="text-decoration: none;">
+                    <button class="nav-button" data-screen="menu">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-label">MENU</span>
+                    </button>
+                </a>
+                <a href="architecture.html" style="text-decoration: none;">
+                    <button class="nav-button" data-screen="architecture">
+                        <span class="nav-icon">📐</span>
+                        <span class="nav-label">ARCHITECTURE</span>
+                    </button>
+                </a>
+                <a href="wafer.html" style="text-decoration: none;">
+                    <button class="nav-button" data-screen="wafer">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-label">WAFER</span>
+                    </button>
+                </a>
+                <button class="nav-button active" data-screen="market">
+                    <span class="nav-icon">🏪</span>
+                    <span class="nav-label">MARKET</span>
+                </button>
+                <button class="nav-button" data-screen="fab" disabled>
+                    <span class="nav-icon">🏭</span>
+                    <span class="nav-label">FAB</span>
+                </button>
+                <button class="nav-button" data-screen="binning" disabled>
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">BINNING</span>
+                </button>
+                <button class="nav-button" data-screen="packaging" disabled>
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-label">PACKAGING</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel: Filters & Die Selection -->
+            <aside class="control-panel">
+                <div class="panel-frame themed-panel-bg beefy-border-panel chevron-corners-large border-glow-animated">
+                    <div class="panel-header">
+                        <div class="chevron-divider"></div>
+                        <h3>CONTRACT PARAMETERS</h3>
+                        <div class="chevron-divider"></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="die-select">Die Design</label>
+                        <select id="die-select" class="art-deco-select">
+                            <option value="">-- Select Die --</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="process-node-filter">Process Node</label>
+                        <select id="process-node-filter" class="art-deco-select">
+                            <option value="">All Nodes</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="wafer-count">Number of Wafers</label>
+                        <input type="number" id="wafer-count" class="art-deco-input"
+                               value="100" min="1" max="100000" step="1">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="contract-type">Contract Type</label>
+                        <select id="contract-type" class="art-deco-select">
+                            <option value="spot">Spot Order (1 batch, +10% premium)</option>
+                            <option value="short-term">Short-term (13-52 weeks, 5-10% discount)</option>
+                            <option value="long-term">Long-term (52-260 weeks, 10-20% discount)</option>
+                        </select>
+                    </div>
+
+                    <div id="contract-duration-group" class="control-group" style="display: none;">
+                        <label for="contract-duration">Duration (weeks)</label>
+                        <input type="number" id="contract-duration" class="art-deco-input"
+                               value="52" min="13" max="260" step="1">
+                    </div>
+
+                    <div id="wafers-per-week-group" class="control-group" style="display: none;">
+                        <label for="wafers-per-week">Wafers per Week</label>
+                        <input type="number" id="wafers-per-week" class="art-deco-input"
+                               value="10" min="1" max="1000" step="1">
+                    </div>
+
+                    <div class="panel-header" style="margin-top: 20px;">
+                        <div class="chevron-divider"></div>
+                        <h3>FILTERS</h3>
+                        <div class="chevron-divider"></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="tier-filter">Foundry Tier</label>
+                        <select id="tier-filter" class="art-deco-select">
+                            <option value="">All Tiers</option>
+                            <option value="premium">Premium</option>
+                            <option value="mid-range">Mid-Range</option>
+                            <option value="budget">Budget</option>
+                            <option value="specialty">Specialty</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="sort-by">Sort By</label>
+                        <select id="sort-by" class="art-deco-select">
+                            <option value="reputation">Reputation (High to Low)</option>
+                            <option value="price-low">Price (Low to High)</option>
+                            <option value="price-high">Price (High to Low)</option>
+                            <option value="quality">Quality (High to Low)</option>
+                            <option value="capacity">Capacity (High to Low)</option>
+                        </select>
+                    </div>
+
+                    <button id="apply-filters-btn" class="art-deco-button beefy-border-button chevron-corners-button">
+                        <span class="button-text">APPLY FILTERS</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Center Panel: Foundry List -->
+            <main class="canvas-area" style="flex: 2;">
+                <div class="canvas-frame beefy-border-canvas chevron-corners-xlarge border-glow-animated">
+                    <div class="panel-header">
+                        <h3>AVAILABLE FOUNDRIES</h3>
+                    </div>
+                    <div id="foundry-list" class="foundry-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Panel: Active Contracts -->
+            <aside class="control-panel">
+                <div class="panel-frame themed-panel-bg beefy-border-panel chevron-corners-large border-glow-animated">
+                    <div class="panel-header">
+                        <div class="chevron-divider"></div>
+                        <h3>ACTIVE CONTRACTS</h3>
+                        <div class="chevron-divider"></div>
+                    </div>
+
+                    <div id="active-contracts-list" class="contracts-list">
+                        <p style="text-align: center; color: #888; padding: 20px;">No active contracts</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Contract Confirmation Modal -->
+    <div id="contract-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2>CONFIRM CONTRACT</h2>
+                <button class="modal-close" id="close-contract-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="contract-details"></div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button id="confirm-contract-btn" class="art-deco-button beefy-border-button chevron-corners-button primary" style="flex: 1;">
+                        <span class="button-text">SIGN CONTRACT</span>
+                    </button>
+                    <button id="cancel-contract-btn" class="art-deco-button beefy-border-button chevron-corners-button secondary" style="flex: 1;">
+                        <span class="button-text">CANCEL</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load our modules -->
+    <script type="module" src="js/marketMain.js"></script>
+</body>
+</html>
