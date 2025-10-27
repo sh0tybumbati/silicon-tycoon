@@ -435,7 +435,81 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 11: Business Models & Contracts ❌ NOT STARTED
+### Phase 11: Die IP Licensing & Marketplace ❌ NOT STARTED
+**Reference**: FEATURES.md: Die Design IP Licensing System
+
+**Goals**:
+- ❌ Create AI design firm catalog (ARM, Imagination, Synopsys, Cadence, CEVA, Rambus)
+- ❌ Build IP marketplace UI (browse, search, filter, compare IP)
+- ❌ Implement all license types (Purchase, Per-unit Royalty, Perpetual+Royalty, Exclusive, Time-limited)
+- ❌ Add license negotiation interface
+- ❌ Create IP license contract data model and localStorage persistence
+- ❌ Implement pricing formulas (complexity, exclusivity, market factors)
+- ❌ Add royalty payment tracking and invoicing
+- ❌ Build player IP monetization system (list your designs for licensing)
+- ❌ Implement AI RFQ system (AI companies request to license player IP)
+- ❌ Add ARM timeline integration (1990-2020+ core progression and pricing)
+- ❌ Create IP catalog by year (historical availability)
+- ❌ Implement IP vendor reputation system
+
+**Key Features**:
+- Browse AI vendor IP catalogs by category (CPU, GPU, memory controller, interface)
+- License IP with flexible terms (upfront vs. royalty, exclusive vs. non-exclusive)
+- Track licensing costs and royalty payments per chip manufactured
+- List player-designed IP for AI companies to license
+- Receive upfront payments and ongoing royalty streams from IP sales
+- ARM business model simulation (perpetual royalties on every chip)
+- RISC-V emergence (2015+) as free alternative to ARM
+- IP comparison tool (side-by-side specifications, pricing, vendor reputation)
+
+**Files to Create**:
+- `js/ipMarket.js` - AI vendor catalog, pricing engine, contract management
+- `js/ipLicensing.js` - License negotiation, royalty tracking
+- `ip-marketplace.html` - IP marketplace browse/search UI
+- `ip-license.html` - License details and negotiation UI
+
+---
+
+### Phase 12: Microcontroller & Simpler Silicon Production ❌ NOT STARTED
+**Reference**: FEATURES.md: Microcontroller & Simpler Silicon Production
+
+**Goals**:
+- ❌ Create MCU template library (8051, Cortex-M0/M3/M4/M7, RISC-V, AVR, PIC, MSP430)
+- ❌ Build template selection UI with customization options
+- ❌ Implement MCU component system (Flash ROM, SRAM, GPIO, timers, ADC, UART/SPI/I2C)
+- ❌ Add template customization in die designer (memory sizes, peripheral counts)
+- ❌ Implement older node economics model (180nm-350nm profitability)
+- ❌ Create AI customer database (automotive OEMs, industrial, consumer electronics, IoT)
+- ❌ Build Sales & Marketing screen (`sales.html`) - NEW dedicated screen
+- ❌ Add RFQ system from AI system integrators
+- ❌ Implement long-term supply contract negotiation
+- ❌ Add marketing activities (trade shows, eval boards, reference designs, documentation)
+- ❌ Create volume-based pricing calculator (0.5%-20% margins)
+- ❌ Implement dev tool ecosystem tracking (compiler, debugger, IDE licensing)
+- ❌ Add certification system (AEC-Q100, ISO 26262, IEC 61508)
+- ❌ Build contract fulfillment and quality tracking
+
+**Key Features**:
+- Select from MCU templates (quick start) or design from scratch
+- Customize memory sizes, peripherals, communication interfaces
+- Target older, cost-effective nodes (180nm-350nm)
+- AI customers submit RFQs for MCUs matching their requirements
+- Negotiate long-term supply contracts (5-10 years, millions of units)
+- Marketing investments (trade shows $50K-$200K, eval boards, reference designs)
+- High-volume, low-margin business model (billions of units annually)
+- Product lifecycles 10-20+ years (vs. 2-3 years for CPUs)
+- Diversification: stable MCU revenue balances volatile CPU market
+
+**Files to Create**:
+- `js/mcuTemplates.js` - MCU template definitions and customization
+- `js/salesMarketing.js` - AI customer database, RFQ system, contracts
+- `js/mcuEconomics.js` - Volume pricing, margin calculation
+- `sales.html` - Sales & Marketing screen (B2B customer management)
+- `mcu-designer.html` - MCU template selection and customization UI
+
+---
+
+### Phase 13: Business Models & Contracts ❌ NOT STARTED
 **Reference**: FEATURES.md: Business Models
 
 **Goals**:
@@ -454,7 +528,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 12: System Integration & OEM ❌ NOT STARTED
+### Phase 14: System Integration & OEM ❌ NOT STARTED
 **Reference**: FEATURES.md: System Integration & OEM
 
 **Goals**:
@@ -475,7 +549,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 13: Integration & Polish ❌ NOT STARTED
+### Phase 15: Integration & Polish ❌ NOT STARTED
 
 **Goals**:
 - ❌ Connect all phases data flow (Architecture→Wafer→Fab→Binning→Packaging→Market)
@@ -539,16 +613,18 @@ Total: ~4,300 lines of JavaScript
 
 **Current Tab Order**:
 ```
-Architecture → Wafer → Fab → Binning → Packaging → Market (future)
+Architecture → Wafer → Fab → Binning → Packaging → IP Market → Sales → Market (future)
 ```
 
-**Rationale**: Follows semiconductor manufacturing flow:
-1. **Architecture**: Design the die
+**Rationale**: Follows semiconductor manufacturing and business flow:
+1. **Architecture**: Design the die (or license IP from marketplace)
 2. **Wafer**: Plan how dies fit on wafers
 3. **Fab**: Manufacture wafers (defects are rolled here)
 4. **Binning**: Test and categorize dies
 5. **Packaging**: Create final products
-6. **Market**: Sell and distribute (future)
+6. **IP Market**: License IP from vendors, or monetize your own designs
+7. **Sales**: B2B sales (MCUs, simpler silicon to system integrators)
+8. **Market**: B2C/retail sales (CPUs, GPUs to consumers/businesses - future)
 
 ---
 
@@ -605,10 +681,10 @@ Architecture → Wafer → Fab → Binning → Packaging → Market (future)
 
 ## Progress Summary
 
-**Total Phases**: 11
+**Total Phases**: 13
 **Completed**: 1 (Architecture)
 **In Progress**: 1 (Wafer Planning - 50%)
-**Not Started**: 9
+**Not Started**: 11
 
 **Implementation Progress**: ~15% complete
 - Architecture phase: 100%
@@ -623,6 +699,6 @@ Architecture → Wafer → Fab → Binning → Packaging → Market (future)
 
 ---
 
-**Last Updated**: 2025-10-25
-**Version**: v21 (Split from PLANNING_OLD.md)
+**Last Updated**: 2025-10-27
+**Version**: v22 (Added IP Licensing and MCU Production phases)
 **Next Focus**: Complete Wafer Planning phase (Milestone 1)

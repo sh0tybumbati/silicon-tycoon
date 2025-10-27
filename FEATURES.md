@@ -912,6 +912,772 @@ Service Add-ons:
 
 ---
 
+## Die Design IP Licensing System (Planned)
+
+**Overview**: Players can license die designs from AI design firms, or sell/license their own designs to AI companies. This reflects the real semiconductor industry's IP licensing business model (ARM, Synopsys, Cadence, Imagination Technologies).
+
+**Business Models Enabled**:
+
+1. **Pure IP Company** (ARM, Imagination model):
+   - Design cores and IP blocks
+   - License to AI design firms and player
+   - No fabrication, pure licensing revenue
+   - Low capital requirements, high margins
+
+2. **Fabless with Licensed IP** (Many startups):
+   - Buy/license designs instead of designing in-house
+   - Focus on packaging, marketing, sales
+   - Reduce R&D costs and time-to-market
+   - Pay royalties per unit manufactured
+
+3. **Hybrid Designer** (Most companies):
+   - Design some components in-house
+   - License others (e.g., design CPU, license GPU)
+   - Balance R&D investment vs. speed
+   - Mix proprietary and licensed IP
+
+**Marketplace Structure**:
+
+**AI Design Firms Offering IP**:
+- **ARM Limited** (1990+): CPU cores (Cortex-A, Cortex-M, Cortex-R series)
+- **Imagination Technologies** (1985+): GPU cores (PowerVR series)
+- **Synopsys** (1986+): Interface IP (USB, PCIe, DDR controllers)
+- **Cadence** (1988+): SerDes, PHY IP
+- **CEVA** (1999+): DSP cores
+- **Rambus** (1990+): Memory interface IP
+- **Arm China** (2018+): Modified ARM cores for Chinese market
+
+Each vendor has:
+- **IP Catalog**: Available designs by year
+- **Pricing Models**: Purchase, royalty, exclusive, time-limited
+- **Process Node Support**: Which nodes the IP is validated for
+- **Customization Options**: Configurable parameters
+- **Support Level**: Documentation, tools, reference designs
+- **Reputation**: Quality, reliability, support responsiveness
+
+**License Types**:
+
+1. **One-Time Purchase** (Outright ownership):
+   - Pay once: $500K - $50M (based on IP complexity)
+   - Own the design forever
+   - No ongoing royalties
+   - Can modify and customize freely
+   - Use case: Long-term products, high volume
+   - Example: $10M for ARM Cortex-A78 core design
+
+2. **Per-Unit Royalty** (Pay per chip):
+   - Low/no upfront cost: $0 - $2M
+   - Pay $0.01 - $5.00 per chip manufactured
+   - Scales with volume
+   - Lower risk for startups
+   - Use case: Uncertain volume, rapid iteration
+   - Example: $1.50 per chip using ARM core
+
+3. **Perpetual License with Royalty**:
+   - Moderate upfront: $2M - $20M
+   - Ongoing royalty: $0.50 - $3.00 per chip
+   - Never expires
+   - Balance upfront cost and ongoing payments
+   - Use case: Long-term partnership
+   - **This is ARM's primary model**: Pay licensing fee + per-chip royalty forever
+   - Example: $5M upfront + $1.20 per chip
+
+4. **Exclusive License** (Prevent competitors):
+   - Premium pricing: 3-10× standard license
+   - Only you can use this IP
+   - Competitive advantage
+   - Limited availability (vendors prefer non-exclusive)
+   - Use case: Flagship differentiator
+   - Example: $100M exclusive for 5 years
+
+5. **Time-Limited License** (Rental):
+   - Pay for X weeks/years: $100K - $10M per year
+   - Can be exclusive or non-exclusive
+   - Renegotiate at expiry
+   - Flexible for changing needs
+   - Use case: Short product lifecycle, testing market
+   - Example: $2M/year for 3 years
+
+**IP License Contract Data Structure**:
+```javascript
+{
+  id: 'ip_license_2025_arm_001',
+  type: 'perpetual-royalty',
+
+  // Parties
+  vendorId: 'arm_limited',
+  vendorName: 'ARM Limited',
+  licenseeId: 'player',
+
+  // IP Details
+  ipId: 'cortex_a78_core',
+  ipName: 'ARM Cortex-A78 CPU Core',
+  ipCategory: 'cpu_core',
+  ipVersion: 'r1p0',
+
+  // Technical Specs
+  processNodes: [7, 5, 3],          // Validated for these nodes
+  dimensions: { width: 2.5, height: 2.0 },  // mm²
+  transistorCount: 150000000,       // 150M transistors (approximate)
+  performance: {
+    baseIPC: 4.5,
+    maxClockGHz: 3.0,
+    powerEfficiency: 'high'
+  },
+
+  // License Terms
+  upfrontCost: 5000000,             // $5M licensing fee
+  perUnitRoyalty: 1.20,             // $1.20 per chip
+  exclusivity: false,               // Non-exclusive
+  transferable: false,              // Cannot resell
+
+  // Timeline (in weeks from game start)
+  signedWeek: 2600,
+  expiryWeek: null,                 // null = perpetual
+
+  // Restrictions
+  allowedMarkets: ['consumer', 'mobile', 'automotive'],  // null = all markets
+  prohibitedMarkets: ['military'],  // Cannot sell to military without separate license
+  territoryRestrictions: null,      // null = worldwide
+  modificationRights: 'limited',    // 'none', 'limited', 'full'
+  redistributionRights: false,      // Cannot sublicense to others
+
+  // Financials
+  totalUpfrontPaid: 5000000,
+  unitsManufactured: 2500000,       // 2.5M chips produced
+  royaltiesPaid: 3000000,           // $1.20 × 2.5M = $3M
+  totalCost: 8000000,               // $5M + $3M
+  nextRoyaltyDue: 2750,             // Week number
+
+  // Support & Services
+  technicalSupport: true,
+  referenceDesigns: true,
+  developmentTools: true,           // Includes compiler, debugger, profiler
+  documentation: 'full',            // 'basic', 'standard', 'full'
+
+  // Usage Tracking
+  diesCreated: 3,                   // Player created 3 different die designs using this IP
+  dieIds: ['die_001', 'die_005', 'die_012'],
+  activeProducts: 2,                // 2 products currently in production
+
+  // Events Log
+  events: [
+    { week: 2600, type: 'signed', note: 'License agreement signed' },
+    { week: 2608, type: 'first_use', note: 'First die design created using IP' },
+    { week: 2620, type: 'first_royalty', note: 'First royalty payment: $120k for 100k units' },
+    { week: 2700, type: 'milestone', note: '1M units milestone reached' }
+  ]
+}
+```
+
+**ARM Timeline Integration**:
+
+ARM's business model becomes a major gameplay element:
+
+**1990-2000**: ARM7, ARM9 cores available
+- Mobile and embedded focus
+- Modest royalties ($0.05-$0.25 per chip)
+- Growing ecosystem
+
+**2000-2010**: ARM11, Cortex-A8/A9 emergence
+- Smartphone explosion (iPhone 2007)
+- Royalties increase ($0.50-$1.50 per chip)
+- ARM becomes dominant in mobile
+
+**2010-2020**: Cortex-A15/A53/A57/A72/A76/A78 progression
+- 64-bit (ARMv8) arrives
+- Premium cores for flagship phones
+- Royalties reach $1.00-$3.00 per chip
+- Server push begins (AWS Graviton)
+
+**2020+**: Cortex-A78/X1/X2, ARMv9
+- Desktop-class performance (Apple M1)
+- PC/laptop invasion
+- Premium licensing: $5M-$20M upfront + $1.50-$3.00 royalty
+
+**Player Decision Points**:
+- Early ARM adoption: Cheap licenses, low performance
+- Design own cores: No royalties, high R&D cost, differentiation
+- Late ARM adoption: Expensive licenses, high performance, proven ecosystem
+- Mix: ARM for mobile, own designs for flagship desktop
+
+**Pricing Formula**:
+```
+Upfront Cost = Base IP Cost × Complexity Multiplier × Exclusivity Multiplier × Market Factor
+
+Base IP Cost:
+- Simple core (Cortex-M): $500K - $2M
+- Mid-range core (Cortex-A53): $3M - $8M
+- High-performance core (Cortex-A78): $10M - $20M
+- GPU core: $5M - $50M
+- Interface IP (USB, PCIe): $200K - $5M
+
+Complexity Multiplier:
+- Transistor count factor
+- Performance tier factor
+- Customization requirements
+
+Exclusivity Multiplier:
+- Non-exclusive: 1.0×
+- Market-exclusive (e.g., only mobile): 2-3×
+- Geographic-exclusive: 2-4×
+- Full exclusive: 5-10× (rarely offered)
+
+Market Factor:
+- Consumer: 1.0×
+- Automotive: 1.3× (safety critical)
+- Server: 1.5× (higher margins)
+- Military/Aerospace: 3-5× (restricted export, certifications)
+
+Per-Unit Royalty = Base Royalty × Performance Tier × Volume Discount
+
+Base Royalty:
+- Microcontroller core: $0.01 - $0.10
+- Mobile CPU core: $0.50 - $2.00
+- Desktop/server core: $1.50 - $5.00
+- GPU core: $0.50 - $3.00
+
+Performance Tier:
+- Entry-level: 0.5×
+- Mid-range: 1.0×
+- High-performance: 1.5-2.0×
+
+Volume Discount:
+- < 100K units/year: 1.0×
+- 100K - 1M: 0.9×
+- 1M - 10M: 0.75×
+- 10M+: 0.6-0.7×
+```
+
+**Player IP Monetization**:
+
+When player designs high-quality dies, AI design firms may approach to license:
+
+**Licensing Your Designs**:
+1. **List in Marketplace**: Set pricing, license terms
+2. **AI Inquiries**: AI companies send RFQs (Request for Quote)
+3. **Negotiation**: AI offers terms, player accepts/counters
+4. **Contract Signed**: Receive upfront payment
+5. **Royalty Stream**: Receive payments as AI manufactures chips
+
+**Factors Affecting Licensing Value**:
+- **Performance**: Higher IPC, clock speed = premium pricing
+- **Efficiency**: Lower power = more valuable (mobile market)
+- **Process Node**: Cutting-edge nodes command premiums
+- **Uniqueness**: Novel architectures worth more
+- **Validation**: Proven designs (already in production) worth more
+- **Market Fit**: Right performance tier for target market
+
+**Example Player IP License**:
+```javascript
+{
+  // Player licenses their "Quantum Core" CPU design to AI company
+  ipId: 'player_quantum_core_v2',
+  ipName: 'Quantum Core v2 (Player Design)',
+  vendor: 'player',
+  licensee: 'qualcomm_ai',
+
+  terms: {
+    upfront: 15000000,              // $15M upfront (strong performance)
+    royalty: 2.50,                  // $2.50 per chip
+    exclusive: false,
+    duration: 156                   // 3 years
+  },
+
+  // Revenue tracking
+  totalRevenue: 42500000,           // $15M + $27.5M royalties (11M units)
+  projectedLifetimeRevenue: 80000000  // AI projects 32M total units
+}
+```
+
+**Market Dynamics**:
+
+**Supply & Demand**:
+- Popular IP (ARM Cortex-A series) has many licensees
+- Niche IP (DSP cores) fewer buyers but higher margins
+- Commodity IP (USB controllers) cheap, ubiquitous
+- Premium IP (Apple-class cores) scarce, expensive
+
+**Competitive Licensing**:
+- ARM vs. RISC-V vs. MIPS vs. x86 (ISA wars)
+- Imagination vs. ARM Mali vs. Qualcomm Adreno (GPU wars)
+- Players compete by offering better performance/$ or power efficiency
+
+**Tech Shifts**:
+- RISC-V emergence (2015+): Free ISA threatens ARM royalty model
+- Chiplets (2018+): Modular IP increases licensing complexity
+- AI accelerators (2016+): New IP category, high growth
+
+**Discovery & Search**:
+
+**IP Marketplace UI**:
+- Browse by category (CPU, GPU, memory controller, interface)
+- Filter by process node, performance tier, price range
+- Sort by popularity, newest, price
+- Vendor reputation scores
+- Customer reviews (AI companies rate IP quality)
+- Comparison tool (compare 2-4 IP side-by-side)
+
+**Search Criteria**:
+- Transistor count range
+- Performance requirements (IPC, clock, power)
+- License type preference
+- Budget constraints
+- Time-to-market urgency
+
+---
+
+## Microcontroller & Simpler Silicon Production (Planned)
+
+**Overview**: Players can design and manufacture microcontrollers (MCUs) and other simpler chips for high-volume, low-margin markets. This diversifies the business away from flagship CPUs/GPUs into commodity silicon for industrial, automotive, consumer electronics, and IoT applications.
+
+**Market Opportunity**:
+
+**Why MCUs Matter**:
+- **Huge Volume**: Billions of MCUs shipped annually (vs. millions of CPUs)
+- **Long Lifecycles**: 10-20+ year production runs (vs. 2-3 years for CPUs)
+- **Older Nodes Profitable**: 180nm-350nm nodes remain cost-effective
+- **Stable Demand**: Less cyclical than consumer tech
+- **Diverse Applications**: Every electronic device needs control logic
+
+**Real-World Scale**:
+- Global MCU market: ~$20-25B annually (vs. ~$100B for PCs/servers)
+- Unit volume: 25-30 billion MCUs/year
+- Price range: $0.10 - $20 per unit (vs. $50-$2000 for CPUs)
+- Top vendors: NXP, Microchip, Renesas, STMicroelectronics, Texas Instruments
+
+**Product Categories**:
+
+### 1. Microcontrollers (MCUs)
+
+**8-bit MCUs**:
+- **Architectures**: 8051, PIC, AVR, 68HC08
+- **Die Size**: 2-6 mm²
+- **Optimal Nodes**: 350nm, 250nm, 180nm
+- **Price Target**: $0.15 - $2.00
+- **Applications**: Toys, appliances, simple sensors
+- **Volume**: Very high (millions per customer)
+
+**16-bit MCUs**:
+- **Architectures**: MSP430, PIC24, 68HC16
+- **Die Size**: 4-10 mm²
+- **Optimal Nodes**: 180nm, 130nm
+- **Price Target**: $0.50 - $4.00
+- **Applications**: Industrial controls, automotive subsystems
+- **Volume**: High (hundreds of thousands per customer)
+
+**32-bit MCUs**:
+- **Architectures**: ARM Cortex-M0/M3/M4/M7, RISC-V
+- **Die Size**: 6-15 mm²
+- **Optimal Nodes**: 130nm, 90nm, 65nm
+- **Price Target**: $1.00 - $15.00
+- **Applications**: IoT, wearables, automotive (ADAS), industrial
+- **Volume**: High to medium
+
+**Typical MCU Components**:
+- Small CPU core (0.5-2 mm²)
+- ROM/Flash (program storage): 8KB - 2MB
+- SRAM (data memory): 256 bytes - 512KB
+- GPIO (general purpose I/O): 16-128 pins
+- Timers/Counters: 2-8 units
+- ADC (analog-to-digital): 4-16 channels, 8-16 bit resolution
+- Communication interfaces: UART, SPI, I2C, CAN, USB
+- Clock/oscillator circuitry
+- Power management: Sleep modes, brownout detection
+
+### 2. Simpler CPUs for Embedded/IoT
+
+**Application Processors** (between MCU and full CPU):
+- ARM Cortex-A5/A7 (low-power application cores)
+- RISC-V RV32/RV64 cores
+- MIPS M-class
+- Use cases: Smart displays, set-top boxes, IoT gateways
+- Die size: 10-30 mm²
+- Nodes: 65nm, 45nm, 28nm
+
+### 3. Specialty Chips
+
+**Power Management ICs**:
+- Voltage regulators, battery chargers
+- Mixed analog/digital design
+- Die size: 3-10 mm²
+- Higher margins (specialized)
+
+**Sensor Controllers**:
+- Image sensors (cameras)
+- Accelerometers, gyroscopes (MEMS interface)
+- Temperature, pressure sensors
+
+**Communication Chips**:
+- Bluetooth/Wi-Fi/Zigbee radios
+- NFC controllers
+- GPS receivers
+
+**Design Approach**:
+
+### MCU Template System
+
+**Pre-Configured Templates** (Quick Start):
+
+Player selects from template library:
+- **8051-Compatible**: Classic architecture, huge ecosystem
+- **ARM Cortex-M0+**: Ultra-low power, modern
+- **ARM Cortex-M3**: Balanced performance/power
+- **ARM Cortex-M4**: DSP extensions, audio/signal processing
+- **ARM Cortex-M7**: High performance, automotive-grade
+- **RISC-V RV32IMAC**: Open source, customizable
+- **AVR**: Arduino ecosystem compatibility
+- **PIC**: Microchip legacy, wide adoption
+
+**Template Structure**:
+```javascript
+{
+  id: 'template_cortex_m4',
+  name: 'ARM Cortex-M4 MCU',
+  category: 'microcontroller',
+  architecture: '32-bit',
+  isa: 'ARMv7-M',
+
+  // Requires ARM license
+  requiredLicense: 'arm_cortex_m4_license',
+  licenseCost: {
+    upfront: 500000,                // $500K
+    perUnit: 0.08                   // $0.08 per chip
+  },
+
+  // Pre-configured components
+  baseComponents: [
+    {
+      type: 'cpu_core',
+      name: 'Cortex-M4 Core',
+      fixed: true,                  // Cannot remove
+      dimensions: { width: 1.2, height: 1.0 }
+    },
+    {
+      type: 'memory',
+      name: 'Flash ROM',
+      customizable: true,
+      sizeOptions: [64, 128, 256, 512, 1024, 2048],  // KB
+      dimensions: { width: 2.0, height: 1.5 }  // @ 256KB
+    },
+    {
+      type: 'memory',
+      name: 'SRAM',
+      customizable: true,
+      sizeOptions: [16, 32, 64, 128, 256],  // KB
+      dimensions: { width: 1.0, height: 0.8 }  // @ 64KB
+    },
+    {
+      type: 'io_controller',
+      name: 'GPIO Bank',
+      customizable: true,
+      pinOptions: [32, 64, 96, 128],
+      dimensions: { width: 0.8, height: 0.6 }
+    },
+    {
+      type: 'io_controller',
+      name: 'Timer/PWM',
+      customizable: true,
+      countOptions: [4, 6, 8, 12],  // Number of timers
+      dimensions: { width: 0.5, height: 0.4 }
+    },
+    {
+      type: 'io_controller',
+      name: 'ADC',
+      customizable: true,
+      channelOptions: [8, 12, 16],
+      resolutionOptions: [10, 12, 16],  // bits
+      dimensions: { width: 0.6, height: 0.5 }
+    },
+    {
+      type: 'io_controller',
+      name: 'UART/SPI/I2C',
+      fixed: false,                 // Can remove if not needed
+      dimensions: { width: 0.4, height: 0.3 }
+    }
+  ],
+
+  // Economics
+  optimalNodes: [90, 65, 45],       // Most cost-effective
+  typicalDieSize: 8.5,              // mm² (configured above)
+  yieldExpectation: 0.85,           // Higher than cutting-edge CPUs
+
+  // Market positioning
+  targetPrice: 3.50,                // $3.50 per unit at 100K volume
+  targetMargin: 0.40,               // 40% gross margin
+  targetCustomers: ['automotive', 'industrial', 'consumer_electronics', 'iot'],
+  typicalOrderSize: 250000,         // 250K units per customer per year
+  productLifecycle: 12,             // 12 years typical
+
+  // Development ecosystem
+  developmentTools: {
+    compiler: 'ARM Keil MDK',
+    debugger: 'J-Link',
+    ide: 'Keil uVision / IAR Embedded Workbench',
+    costPerSeat: 5000               // $5K per developer license
+  },
+  referenceDesigns: true,           // Eval boards, schematics
+  documentationQuality: 'excellent',
+  communitySize: 'very large'       // Affects customer adoption rate
+}
+```
+
+**Customization Options**:
+- Memory sizes (ROM/RAM)
+- Peripheral counts (GPIO, timers, ADC channels)
+- Communication interfaces (add/remove UART, SPI, I2C, CAN, USB)
+- Power modes (number of sleep states)
+- Package type (QFN, TQFP, BGA)
+
+**Also Use Existing Die Designer**:
+
+Players can:
+1. Start from template → customize in die designer
+2. Design from scratch using simple components
+3. Clone template → modify layout/components
+
+Templates just provide **validated starting points** with realistic configurations.
+
+### Sales & Marketing System
+
+**New Dedicated Screen**: `sales.html`
+
+Unlike flagship CPUs sold through retail (future Market screen), MCUs are sold B2B to system integrators and industrial customers.
+
+**Customer Database** (AI System Integrators):
+
+**Consumer Electronics**:
+- **TV Manufacturers**: Samsung, LG, Sony (need MCUs for remotes, power, tuning)
+- **Appliance Makers**: Whirlpool, GE, Bosch (washers, fridges, ovens)
+- **Toy Companies**: Hasbro, Mattel (electronic toys)
+- Volume: 1M - 10M units/year per customer
+- Price sensitivity: High (cost-driven)
+- Lifecycle: 2-5 years
+
+**Automotive**:
+- **OEMs**: Toyota, Ford, VW, Tesla
+- **Tier-1 Suppliers**: Bosch, Continental, Denso
+- Applications: Engine control, ADAS, infotainment, body electronics
+- Volume: 100K - 5M units/year per platform
+- Price sensitivity: Medium (reliability critical)
+- Lifecycle: 7-15 years (automotive grade)
+- Certifications required: AEC-Q100, ISO 26262
+
+**Industrial Automation**:
+- **PLC Manufacturers**: Siemens, Rockwell, Schneider Electric
+- **Robotics**: ABB, FANUC, KUKA
+- **Instrumentation**: Honeywell, Emerson
+- Volume: 10K - 500K units/year
+- Price sensitivity: Low (performance/reliability priority)
+- Lifecycle: 10-20 years
+- Certifications: IEC 61508
+
+**IoT/Smart Home**:
+- **IoT Platforms**: Amazon (Alexa devices), Google (Nest)
+- **Wearables**: Fitbit, Garmin
+- **Smart Lighting**: Philips Hue, LIFX
+- Volume: 500K - 10M units/year
+- Price sensitivity: Medium-high
+- Lifecycle: 2-4 years
+- Connectivity requirements: BLE, Zigbee, Wi-Fi
+
+**Sales Process**:
+
+1. **Lead Generation**:
+   - AI customers browse MCU catalog
+   - Match requirements (performance, price, features)
+   - Submit RFQ (Request for Quote)
+
+2. **RFQ Evaluation**:
+   ```javascript
+   {
+     rfqId: 'rfq_toyota_ecu_2025',
+     customer: 'Toyota Motor Corporation',
+     application: 'Engine Control Unit (ECU)',
+
+     requirements: {
+       architecture: '32-bit',
+       minClock: 120,              // MHz
+       minFlash: 512,              // KB
+       minRAM: 64,                 // KB
+       peripherals: ['CAN', 'ADC_12bit', 'PWM', 'SPI'],
+       tempRange: [-40, 125],      // °C (automotive grade)
+       certifications: ['AEC-Q100', 'ISO26262_ASIL-D']
+     },
+
+     volume: {
+       yearlyEstimate: 2000000,    // 2M units/year
+       contractLength: 260,        // 5 years (in weeks)
+       totalVolume: 10000000       // 10M units over 5 years
+     },
+
+     pricing: {
+       targetPrice: 4.50,          // $4.50 per unit
+       flexibilityPercent: 10      // Willing to pay up to $4.95
+     },
+
+     timeline: {
+       samplesNeeded: 2620,        // Week number
+       productionStart: 2650       // 30 weeks for validation
+     }
+   }
+   ```
+
+3. **Quotation**:
+   - Calculate costs (wafer, binning, packaging, testing)
+   - Add margin
+   - Submit quote to customer
+
+4. **Negotiation**:
+   - AI customer accepts/counters/rejects
+   - Player can adjust price, terms, volume commitments
+
+5. **Contract Signed**:
+   - Long-term supply agreement
+   - Volume commitments with penalties
+   - Price locks (or escalation clauses)
+   - Quality requirements
+
+6. **Order Fulfillment**:
+   - Manufacturing triggered automatically
+   - Weekly/monthly shipments
+   - Quality tracking
+   - Invoice and payment
+
+**Marketing Activities**:
+
+**Trade Shows**:
+- **Embedded World** (Nuremberg): $50K booth, reach industrial customers
+- **CES** (Las Vegas): $200K booth, reach consumer electronics
+- **Automotive World** (Tokyo): $75K booth, reach automotive OEMs
+- ROI: Increases awareness, generates leads
+
+**Development Boards** (Eval Kits):
+- Design reference board with MCU
+- Cost: $50K-$200K development + $50-$200 per board
+- Give away or sell at cost to engineers
+- Critical for adoption: Engineers test on eval boards before committing
+- Ecosystem effect: More boards → more designs → more orders
+
+**Reference Designs**:
+- Publish schematics, PCB layouts, example code
+- Cost: $100K-$500K per design
+- Accelerates customer time-to-market
+- Example: "Smart Thermostat Reference Design"
+
+**Documentation**:
+- Datasheets, user manuals, application notes
+- Quality affects adoption rate
+- Cost: $500K-$2M for comprehensive documentation
+- Ongoing updates
+
+**Developer Tools**:
+- Compilers, debuggers, IDEs
+- License or provide free
+- Critical for ecosystem
+- Example: Free GCC toolchain vs. $5K commercial toolchain
+
+**Long-Term Contracts**:
+
+```javascript
+{
+  id: 'contract_bosch_adas_2025',
+  type: 'long-term-supply',
+
+  customer: {
+    id: 'bosch_automotive',
+    name: 'Robert Bosch GmbH',
+    segment: 'automotive_tier1',
+    reputation: 95
+  },
+
+  product: {
+    mcuId: 'player_cortex_m7_adas',
+    mcuName: 'Player M7-ADAS MCU',
+    specification: '32-bit ARM Cortex-M7, 300MHz, 2MB Flash, 512KB RAM, CAN-FD, AEC-Q100'
+  },
+
+  volume: {
+    weekly: 10000,                  // 10K units per week
+    yearly: 520000,                 // 520K per year
+    totalCommitment: 2600000,       // 2.6M units (5 years)
+    contractWeeks: 260              // 5 years
+  },
+
+  pricing: {
+    unitPrice: 8.50,                // $8.50 per unit
+    priceProtection: true,          // Price locked for contract duration
+    volumeIncentive: {
+      threshold: 600000,            // If yearly volume exceeds 600K
+      discount: 0.05                // -5% price reduction
+    }
+  },
+
+  financial: {
+    yearlyRevenue: 4420000,         // $4.42M per year
+    totalValue: 22100000,           // $22.1M over 5 years
+    marginPercent: 45               // 45% gross margin
+  },
+
+  quality: {
+    maxDefectRate: 0.0001,          // 100 PPM (parts per million)
+    penaltyPerDefect: 500,          // $500 penalty per defective unit
+    testingRequired: 'AEC-Q100',
+    traceabilityRequired: true      // Lot traceability mandatory
+  },
+
+  terms: {
+    paymentTerms: 'Net 60',         // Payment 60 days after delivery
+    cancellationPenalty: 0.30,      // 30% of remaining value
+    forecastRequired: 13,           // 13-week rolling forecast
+    leadTime: 12                    // 12 weeks from order to delivery
+  },
+
+  status: 'active',
+  startWeek: 2600,
+  endWeek: 2860,
+  weeklyDeliveries: [
+    { week: 2600, ordered: 10000, delivered: 10000, defects: 0, revenue: 85000 },
+    { week: 2601, ordered: 10000, delivered: 10000, defects: 1, revenue: 84500 },
+    // ...
+  ]
+}
+```
+
+**Economics**:
+
+**Cost Structure** (example 32-bit MCU @ 90nm):
+- Wafer cost: $3,500
+- Dies per wafer: 450
+- Yield: 85%
+- Good dies per wafer: 383
+- **Cost per die**: $9.14
+- Packaging cost: $0.80
+- Testing cost: $0.30
+- **Total manufacturing cost**: $10.24
+
+**Pricing Strategy**:
+- Low volume (< 10K): $15.00 (47% margin)
+- Medium volume (10K-100K): $12.00 (17% margin)
+- High volume (100K-1M): $10.50 (2.5% margin)
+- Very high volume (1M+): $10.30 (0.6% margin)
+
+**Profitability**:
+- Low margins per unit (0.5% - 20%)
+- High volume compensates
+- Stable, predictable revenue
+- Long-term relationships
+
+**Strategic Value**:
+
+1. **Diversification**: Balance high-risk flagship CPUs with stable MCU revenue
+2. **Older Node Utilization**: Keep 180nm-350nm fabs profitable
+3. **Customer Relationships**: MCU customers become partners
+4. **Ecosystem Lock-In**: Dev tools, reference designs create switching costs
+5. **Market Intelligence**: Industrial customers provide early demand signals
+
+---
+
 ## Fabrication System (Planned)
 
 **Process Stages** (modern CMOS):
@@ -2030,6 +2796,6 @@ Silicon Tycoon features a dual-theme system with comprehensive visual styling.
 
 ---
 
-**Last Updated**: 2025-10-26
-**Total Features Documented**: 16+ major systems
+**Last Updated**: 2025-10-27
+**Total Features Documented**: 18+ major systems
 **Status**: Comprehensive technical reference for implemented and planned features
