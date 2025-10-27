@@ -223,6 +223,11 @@ class SiliconTycoonApp {
             this.showBatchLibrary();
         });
 
+        // Order from Foundry button
+        document.getElementById('order-foundry-btn').addEventListener('click', () => {
+            this.orderFromFoundry();
+        });
+
         // Real-time maturity slider update
         document.getElementById('process-maturity').addEventListener('input', (e) => {
             this.updateMaturityDisplay();
@@ -382,6 +387,10 @@ class SiliconTycoonApp {
 
         // Enable save button if we have valid results
         document.getElementById('save-batch-btn').disabled = false;
+
+        // Enable order from foundry button if die is selected
+        const dieId = document.getElementById('die-select').value;
+        document.getElementById('order-foundry-btn').disabled = !dieId;
     }
 
     /**
@@ -652,6 +661,39 @@ class SiliconTycoonApp {
             deleteBatchPlan(batchId);
             this.renderBatchLibrary();
         }
+    }
+
+    /**
+     * Order wafers from foundry - navigate to market with current batch plan data
+     */
+    orderFromFoundry() {
+        if (!this.lastCalculatedResults) {
+            alert('Please calculate a batch plan first');
+            return;
+        }
+
+        const dieId = document.getElementById('die-select').value;
+        if (!dieId) {
+            alert('Please select a die design first');
+            return;
+        }
+
+        // Store the current batch plan data for the market to pick up
+        const orderData = {
+            dieId: dieId,
+            processNode: parseInt(document.getElementById('process-node').value),
+            waferSize: parseInt(document.getElementById('wafer-size').value),
+            diesPerWafer: this.lastCalculatedResults.totalDies,
+            yield: this.lastCalculatedResults.overallYield,
+            costPerWafer: this.lastCalculatedResults.costPerWafer,
+            maturity: document.getElementById('process-maturity').value,
+            timestamp: Date.now()
+        };
+
+        localStorage.setItem('silicon-tycoon-pending-order', JSON.stringify(orderData));
+
+        // Navigate to market
+        window.location.href = 'market.html';
     }
 }
 

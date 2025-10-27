@@ -27,6 +27,9 @@ class FoundryMarketApp {
         this.populateDieSelect();
         this.populateProcessNodes();
 
+        // Check for pending order from wafer planner
+        this.checkPendingOrder();
+
         // Set up event listeners
         this.setupEventListeners();
 
@@ -37,6 +40,45 @@ class FoundryMarketApp {
         this.updateActiveContracts();
 
         console.log('[FoundryMarket] Initialization complete');
+    }
+
+    /**
+     * Check if there's a pending order from the wafer planner
+     */
+    checkPendingOrder() {
+        const pendingOrderData = localStorage.getItem('silicon-tycoon-pending-order');
+        if (!pendingOrderData) {
+            return;
+        }
+
+        try {
+            const orderData = JSON.parse(pendingOrderData);
+            console.log('[FoundryMarket] Found pending order:', orderData);
+
+            // Auto-select die
+            if (orderData.dieId) {
+                document.getElementById('die-select').value = orderData.dieId;
+                const library = getDieLibrary();
+                this.selectedDie = library.getDie(orderData.dieId);
+            }
+
+            // Auto-set process node filter
+            if (orderData.processNode) {
+                document.getElementById('process-node-filter').value = orderData.processNode;
+            }
+
+            // Clear the pending order
+            localStorage.removeItem('silicon-tycoon-pending-order');
+
+            // Show a helpful message
+            setTimeout(() => {
+                alert(`Batch plan loaded from Wafer Planner!\n\nDie: ${this.selectedDie?.sku || 'Unknown'}\nProcess Node: ${orderData.processNode}nm\nDies per Wafer: ${orderData.diesPerWafer}\n\nSelect a foundry to place your order.`);
+            }, 500);
+
+        } catch (e) {
+            console.error('[FoundryMarket] Failed to load pending order:', e);
+            localStorage.removeItem('silicon-tycoon-pending-order');
+        }
     }
 
     setupEventListeners() {
