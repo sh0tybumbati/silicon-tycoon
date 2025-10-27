@@ -162,8 +162,8 @@ export const NODE_VOLTAGE = {
     22: 0.9,        // 22nm: 0.9V
     14: 0.85,       // 14nm: 0.85V
     12: 0.80,       // 12nm: 0.80V
-    10: 0.80,       // 10nm: 0.80V
-    7: 0.75,        // 7nm: 0.75V
+    10: 0.75,       // 10nm: 0.75V (lower voltage for efficiency)
+    7: 0.72,        // 7nm: 0.72V (optimized for density)
     5: 0.70,        // 5nm: 0.70V
     3: 0.65         // 3nm: 0.65V
 };
@@ -199,13 +199,14 @@ export const LEAKAGE_PER_M_TRANSISTORS = {
 };
 
 // Thermal limits by chip type (W/mm²)
-// BALANCED: Increased to allow more headroom before throttling
+// BALANCED: Increased to reflect modern cooling capabilities
+// Modern tower coolers and AIOs can handle higher densities at smaller nodes
 export const THERMAL_LIMITS = {
-    consumer_cpu: 0.60,     // Consumer desktop CPU (was 0.50) - modern CPUs can handle 0.5-0.7 W/mm²
-    server_cpu: 0.80,       // Server CPU with better cooling (was 0.70)
-    laptop_cpu: 0.40,       // Laptop CPU (thermal constrained) (was 0.35)
-    gpu: 0.45,              // GPU (large area, challenging cooling) (was 0.40)
-    mobile_soc: 0.30        // Mobile SoC (very thermal constrained) (was 0.25)
+    consumer_cpu: 1.00,     // Consumer desktop CPU - modern cooling handles 0.8-1.2 W/mm²
+    server_cpu: 1.20,       // Server CPU with better cooling and larger heatsinks
+    laptop_cpu: 0.60,       // Laptop CPU (thermal constrained but improved)
+    gpu: 0.65,              // GPU (large area, challenging cooling)
+    mobile_soc: 0.40        // Mobile SoC (very thermal constrained)
 };
 
 // Interconnect requirements: which components need to communicate
