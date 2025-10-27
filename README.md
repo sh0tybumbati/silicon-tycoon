@@ -131,7 +131,7 @@ All rights reserved.
 
 ## Version
 
-Current: v0.3.9 Alpha (Architecture complete, Wafer Planning 50%, Theme system with 4 themes, Power tuning for modern nodes)
+Current: v0.4.0 Alpha (Architecture complete, Wafer Planning complete with batch library, Theme system with 4 themes)
 
 ---
 

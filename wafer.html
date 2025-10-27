@@ -138,6 +138,20 @@
                     <button id="calculate-btn" class="art-deco-button beefy-border-button chevron-corners-button">
                         <span class="button-text">CALCULATE YIELD</span>
                     </button>
+
+                    <div class="panel-header" style="margin-top: 20px;">
+                        <div class="chevron-divider"></div>
+                        <h3>BATCH MANAGEMENT</h3>
+                        <div class="chevron-divider"></div>
+                    </div>
+
+                    <button id="save-batch-btn" class="art-deco-button beefy-border-button chevron-corners-button primary" disabled>
+                        <span class="button-text">SAVE BATCH PLAN</span>
+                    </button>
+
+                    <button id="library-btn" class="art-deco-button beefy-border-button chevron-corners-button secondary">
+                        <span class="button-text">BATCH LIBRARY</span>
+                    </button>
                 </div>
             </aside>
 
@@ -164,6 +178,14 @@
                     <div class="stat-item">
                         <span class="stat-label">Overall Yield</span>
                         <span class="stat-value" id="overall-yield">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Cost/Wafer</span>
+                        <span class="stat-value" id="cost-per-wafer">$0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Time/Wafer</span>
+                        <span class="stat-value" id="time-per-wafer">0 days</span>
                     </div>
                 </div>
 
@@ -203,10 +225,28 @@
         </footer>
     </div>
 
+    <!-- Batch Library Modal -->
+    <div id="batch-library-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog batch-library-modal">
+            <div class="modal-header">
+                <h2>BATCH PLAN LIBRARY</h2>
+                <button class="modal-close" id="close-library-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="library-controls">
+                    <input type="text" id="library-search" class="search-input" placeholder="Search batch plans...">
+                </div>
+                <div id="batch-library-list" class="library-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Load PixiJS from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.3.2/dist/pixi.min.js"></script>
 
     <!-- Load our modules -->
-    <script type="module" src="js/main.js?v=4"></script>
+    <script type="module" src="js/main.js?v=5"></script>
 </body>
 </html>

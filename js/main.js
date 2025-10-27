@@ -5,13 +5,15 @@ import { WaferPlanner } from './waferPlanner.js';
 import { WaferRenderer } from './renderer.js';
 import { formatNumber } from './physics.js';
 import { initTheme, setupThemeSelector } from './themeManager.js';
-import { getDieLibrary } from './dieLibrary.js';
-import { loadBatchPlans, MATURITY_MULTIPLIERS, MATURITY_LABELS } from './batchPlanner.js';
+import { getDieLibrary, getDieById } from './dieLibrary.js';
+import { loadBatchPlans, getBatchPlans, addBatchPlan, deleteBatchPlan, BatchPlan } from './batchPlanner.js';
 
 class SiliconTycoonApp {
     constructor() {
         this.planner = new WaferPlanner();
         this.renderer = null;
+        this.currentBatchPlan = null;
+        this.lastCalculatedResults = null;
 
         this.init();
     }
@@ -170,6 +172,16 @@ class SiliconTycoonApp {
             this.onCalculate();
         });
 
+        // Save batch plan button
+        document.getElementById('save-batch-btn').addEventListener('click', () => {
+            this.onSaveBatchPlan();
+        });
+
+        // Batch library button
+        document.getElementById('library-btn').addEventListener('click', () => {
+            this.showBatchLibrary();
+        });
+
         // Real-time maturity slider update
         document.getElementById('process-maturity').addEventListener('input', (e) => {
             this.updateMaturityDisplay();
@@ -312,12 +324,16 @@ class SiliconTycoonApp {
 
         // Run calculations
         const results = this.planner.calculate();
+        this.lastCalculatedResults = results;
 
         // Update UI with results
         this.updateStatsDisplay(this.planner.getStats());
 
         // Render wafer
         this.renderer.renderWafer(this.planner.getWaferData());
+
+        // Enable save button if we have valid results
+        document.getElementById('save-batch-btn').disabled = false;
     }
 
     /**
@@ -334,6 +350,15 @@ class SiliconTycoonApp {
         // Overall yield
         document.getElementById('overall-yield').textContent =
             stats.overallYield.toFixed(1) + '%';
+
+        // Cost per wafer
+        const processNode = this.planner.config.processNodeNm;
+        const costPerWafer = BatchPlan.getCostPerWafer(processNode);
+        document.getElementById('cost-per-wafer').textContent = `$${costPerWafer.toFixed(1)}k`;
+
+        // Time per wafer (estimate based on process node complexity)
+        const timePerWafer = this.estimateWaferTime(processNode);
+        document.getElementById('time-per-wafer').textContent = `${timePerWafer} days`;
 
         // Yield breakdown
         const breakdown = stats.yieldBreakdown;
@@ -358,6 +383,215 @@ class SiliconTycoonApp {
         document.getElementById('unusable-count').textContent = breakdown.unusable;
         document.getElementById('unusable-percent').textContent =
             `(${((breakdown.unusable / total) * 100).toFixed(1)}%)`;
+    }
+
+    /**
+     * Estimate fabrication time per wafer based on process node
+     */
+    estimateWaferTime(processNode) {
+        // More advanced nodes require more processing steps and take longer
+        if (processNode <= 5) return 90; // 3nm-5nm: ~90 days
+        if (processNode <= 10) return 75; // 7nm-10nm: ~75 days
+        if (processNode <= 22) return 60; // 14nm-22nm: ~60 days
+        if (processNode <= 65) return 45; // 32nm-65nm: ~45 days
+        if (processNode <= 180) return 30; // 90nm-180nm: ~30 days
+        return 20; // 250nm+: ~20 days
+    }
+
+    /**
+     * Save current configuration as a batch plan
+     */
+    onSaveBatchPlan() {
+        if (!this.lastCalculatedResults) {
+            alert('Please calculate yield before saving');
+            return;
+        }
+
+        // Prompt for batch plan name
+        const name = prompt('Enter batch plan name:', 'Batch Plan ' + (getBatchPlans().length + 1));
+        if (!name) return;
+
+        // Get selected die (if any)
+        const dieSelect = document.getElementById('die-select');
+        const selectedDieId = dieSelect.value;
+
+        // Create batch plan
+        const batchPlan = new BatchPlan({
+            name: name,
+            dieId: selectedDieId || null,
+            waferSize: this.planner.config.waferDiameterMm,
+            processNode: this.planner.config.processNodeNm,
+            diesPerWafer: this.planner.getStats().totalDies,
+            reticleShots: 0, // TODO: Calculate from reticle layout
+            reticleSize: {
+                width: this.planner.config.reticleWidthMm,
+                height: this.planner.config.reticleHeightMm
+            },
+            costPerWafer: BatchPlan.getCostPerWafer(this.planner.config.processNodeNm)
+        });
+
+        // Calculate yields by maturity
+        const baseYield = this.planner.getStats().overallYield / 100;
+        batchPlan.yieldByMaturity = BatchPlan.calculateYieldByMaturity(baseYield);
+
+        // Save to library
+        addBatchPlan(batchPlan);
+
+        alert(`Batch plan "${name}" saved successfully!`);
+        document.getElementById('save-batch-btn').disabled = true;
+    }
+
+    /**
+     * Show batch library modal
+     */
+    showBatchLibrary() {
+        const modal = document.getElementById('batch-library-modal');
+        modal.style.display = 'flex';
+
+        this.renderBatchLibrary();
+
+        // Set up modal close handler
+        const closeBtn = document.getElementById('close-library-modal');
+        closeBtn.onclick = () => {
+            modal.style.display = 'none';
+        };
+
+        // Close on outside click
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Set up search
+        const searchInput = document.getElementById('library-search');
+        searchInput.oninput = () => {
+            this.renderBatchLibrary(searchInput.value.toLowerCase());
+        };
+    }
+
+    /**
+     * Render batch library list
+     */
+    renderBatchLibrary(searchTerm = '') {
+        const container = document.getElementById('batch-library-list');
+        const batchPlans = getBatchPlans();
+
+        // Filter by search term
+        const filtered = batchPlans.filter(bp => {
+            if (!searchTerm) return true;
+            const dieName = bp.getDieName().toLowerCase();
+            const name = bp.name.toLowerCase();
+            return name.includes(searchTerm) || dieName.includes(searchTerm);
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>No batch plans found.</p>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">
+                        Create a batch plan by selecting a die design,<br>
+                        configuring wafer parameters, calculating yield,<br>
+                        and clicking "Save Batch Plan".
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filtered.map(bp => `
+            <div class="library-item" data-batch-id="${bp.id}">
+                <div class="item-header">
+                    <h3>${bp.name}</h3>
+                    <div class="item-actions">
+                        <button class="action-btn load-btn" data-batch-id="${bp.id}" title="Load this batch plan">
+                            📂 Load
+                        </button>
+                        <button class="action-btn delete-btn" data-batch-id="${bp.id}" title="Delete this batch plan">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="item-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Die Design:</span>
+                        <span class="detail-value">${bp.getDieName()}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Wafer:</span>
+                        <span class="detail-value">${bp.waferSize}mm @ ${bp.processNode}nm</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Dies/Wafer:</span>
+                        <span class="detail-value">${bp.diesPerWafer} dies</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Cost/Wafer:</span>
+                        <span class="detail-value">$${bp.costPerWafer.toFixed(1)}k</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Yields:</span>
+                        <span class="detail-value">
+                            New: ${(bp.yieldByMaturity.new * 100).toFixed(1)}% |
+                            Mature: ${(bp.yieldByMaturity.mature * 100).toFixed(1)}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Add event listeners
+        container.querySelectorAll('.load-btn').forEach(btn => {
+            btn.onclick = () => this.loadBatchPlan(btn.dataset.batchId);
+        });
+
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.onclick = () => this.deleteBatchPlanWithConfirm(btn.dataset.batchId);
+        });
+    }
+
+    /**
+     * Load a batch plan from library
+     */
+    loadBatchPlan(batchId) {
+        const batchPlans = getBatchPlans();
+        const bp = batchPlans.find(b => b.id === batchId);
+
+        if (!bp) {
+            alert('Batch plan not found');
+            return;
+        }
+
+        // Load batch plan settings into UI
+        document.getElementById('wafer-size').value = bp.waferSize;
+        document.getElementById('process-node').value = bp.processNode;
+        document.getElementById('reticle-size').value = `${bp.reticleSize.width}x${bp.reticleSize.height}`;
+
+        if (bp.dieId) {
+            document.getElementById('die-select').value = bp.dieId;
+            this.onDieSelected(bp.dieId);
+        }
+
+        // Close modal
+        document.getElementById('batch-library-modal').style.display = 'none';
+
+        // Auto-calculate
+        this.onCalculate();
+    }
+
+    /**
+     * Delete a batch plan with confirmation
+     */
+    deleteBatchPlanWithConfirm(batchId) {
+        const batchPlans = getBatchPlans();
+        const bp = batchPlans.find(b => b.id === batchId);
+
+        if (!bp) return;
+
+        if (confirm(`Delete batch plan "${bp.name}"?\n\nThis action cannot be undone.`)) {
+            deleteBatchPlan(batchId);
+            this.renderBatchLibrary();
+        }
     }
 }
 
