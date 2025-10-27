@@ -192,10 +192,10 @@ export const LEAKAGE_PER_M_TRANSISTORS = {
     22: 0.005,       // Reduced from 0.012 - leakage major concern
     14: 0.006,       // Reduced from 0.015 - Real: ~15W leakage for 2.6B transistors = 0.006W/M
     12: 0.007,       // Reduced from 0.017 - peak leakage before mitigation
-    10: 0.006,       // FinFET adoption - leakage controlled
-    7: 0.006,        // Advanced FinFET - similar to 14nm despite smaller size
-    5: 0.006,        // GAA transistors - leakage well controlled
-    3: 0.006         // Advanced GAA + power gating - leakage mitigated
+    10: 0.004,       // FinFET adoption - leakage controlled, better than pre-FinFET
+    7: 0.003,        // Advanced FinFET - superior leakage control
+    5: 0.0025,       // GAA transistors - excellent leakage control
+    3: 0.002         // Advanced GAA + power gating - best-in-class efficiency
 };
 
 // Thermal limits by chip type (W/mm²)
