@@ -141,8 +141,9 @@ class SiliconTycoonApp {
         select.appendChild(manualOption);
 
         // Add all dies from library
-        const dieLibrary = getDieLibrary();
-        dieLibrary.forEach(die => {
+        const library = getDieLibrary();
+        const dies = library.getAllDies();
+        dies.forEach(die => {
             const option = document.createElement('option');
             option.value = die.id;
             option.textContent = `${die.sku} (${die.dimensions.width}×${die.dimensions.height}mm, ${die.processNode}nm)`;
@@ -232,8 +233,8 @@ class SiliconTycoonApp {
             return;
         }
 
-        const dieLibrary = getDieLibrary();
-        const die = dieLibrary.find(d => d.id === dieId);
+        const library = getDieLibrary();
+        const die = library.getDie(dieId);
         if (!die) {
             console.error('[WaferPlanner] Die not found:', dieId);
             return;
