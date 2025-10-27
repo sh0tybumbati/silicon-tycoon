@@ -130,13 +130,17 @@ class SiliconTycoonApp {
      */
     populateDieLibrary() {
         const select = document.getElementById('die-select');
-        // Keep the "Manual Entry" option
-        const manualOption = select.querySelector('option[value=""]');
-        select.innerHTML = '';
-        if (manualOption) {
-            select.appendChild(manualOption);
-        }
 
+        // Clear all options
+        select.innerHTML = '';
+
+        // Always add the manual entry option first
+        const manualOption = document.createElement('option');
+        manualOption.value = '';
+        manualOption.textContent = '-- Manual Entry --';
+        select.appendChild(manualOption);
+
+        // Add all dies from library
         const dieLibrary = getDieLibrary();
         dieLibrary.forEach(die => {
             const option = document.createElement('option');
