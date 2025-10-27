@@ -937,12 +937,13 @@ body::after {
 
 .stat-label {
     color: var(--text-muted);
-    font-size: 0.9em;
+    font-size: 0.85em;
 }
 
 .stat-value {
     color: var(--text);
     font-weight: 600;
+    font-size: 0.9em;
 }
 
 .pricing-section {
