@@ -16,6 +16,16 @@
     --bg-secondary: #F5F5F5;      /* Light Gray */
     --border: #DDDDDD;            /* Border Gray */
 
+    /* Compatibility aliases for theme components */
+    --teal-primary: var(--primary);
+    --teal-dark: var(--primary-dark);
+    --teal-light: var(--primary-light);
+    --magenta-primary: var(--secondary);
+    --magenta-dark: var(--secondary-dark);
+    --magenta-light: var(--accent);
+    --cream: var(--text);
+    --dark-bg: var(--bg-secondary);
+
     /* Typography */
     --font-display: 'Poiret One', cursive;
     --font-body: 'Montserrat', sans-serif;

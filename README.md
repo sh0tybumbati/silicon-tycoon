@@ -131,7 +131,7 @@ All rights reserved.
 
 ## Version
 
-Current: v0.3.1 Alpha (Architecture complete, Wafer Planning 50%, Theme system with 4 themes)
+Current: v0.3.2 Alpha (Architecture complete, Wafer Planning 50%, Theme system with 4 themes)
 
 ---
 

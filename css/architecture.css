@@ -260,11 +260,13 @@
 .art-deco-button.primary {
     background: linear-gradient(135deg, var(--teal-dark), var(--magenta-dark));
     border-color: var(--gold);
+    color: white; /* Ensure white text on colored background */
 }
 
 .art-deco-button.secondary {
     background: linear-gradient(135deg, rgba(0, 206, 209, 0.2), rgba(255, 0, 255, 0.2));
     border-color: var(--teal-dark);
+    color: var(--black); /* Use dark text for semi-transparent backgrounds */
 }
 
 /* ==================== DIE DESIGNER ==================== */
