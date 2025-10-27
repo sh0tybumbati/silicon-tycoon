@@ -155,7 +155,114 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 6: Architecture Enhancements ❌ NOT STARTED
+### Phase 6: PassMark Benchmark Scoring ❌ NOT STARTED
+
+**Goals**:
+- ❌ Research real CPU scores from cpubenchmark.net leaderboards
+- ❌ Implement Multi-Thread score calculation
+- ❌ Implement Single-Thread score calculation
+- ❌ Calibrate scores to match real CPUs (±15% accuracy)
+- ❌ Add benchmark scores to properties panel UI
+- ❌ Document scoring methodology in FEATURES.md
+
+**Key Features**:
+- Multi-thread scoring using clock × IPC × cores with efficiency factors
+- Single-thread scoring using clock × IPC with layout penalties
+- Reference calibration against real CPUs:
+  - High-end: AMD Ryzen 9 7950X (~62,000 multi-thread)
+  - Mid-range: Intel i5-12400F (~19,500 multi-thread)
+  - Budget: Various 4C/8T chips (~10,000-12,000 range)
+- Display alongside existing performance score
+- PassMark methodology alignment (8-test average simulation)
+
+**Reference Data Sources**:
+- https://www.cpubenchmark.net/high_end_cpus.html (multi-thread leaderboard)
+- https://www.cpubenchmark.net/singleThread.html (single-thread leaderboard)
+
+**Implementation Notes**:
+- Scores must scale properly across core counts (2C, 4C, 8C, 16C, 32C)
+- Scores must reflect process node advantages (3nm > 7nm > 12nm)
+- Thermal throttling should reduce scores appropriately
+- Amdahl's law diminishing returns for multi-thread
+
+---
+
+### Phase 7: Component Designer ❌ NOT STARTED
+
+**Goals**:
+- ❌ Create component designer interface (separate screen)
+- ❌ Design custom CPU cores with microarchitecture parameters
+- ❌ Design custom GPU SMs/CUs with compute parameters
+- ❌ Fixed-size component definitions with stat bonuses/penalties
+- ❌ Component library system (save/load custom components)
+- ❌ Integration with die designer (select custom vs generic components)
+
+**Key Features**:
+
+#### Custom CPU Core Designer
+- **Fixed Size**: Component has predetermined dimensions (not scalable)
+- **Microarchitecture Stats**:
+  - Execution width (scalar/superscalar)
+  - Pipeline depth
+  - Branch prediction quality
+  - Out-of-order depth
+  - Cache line size
+- **Bonuses/Penalties**:
+  - Performance bonus: +5% to +30% IPC over generic
+  - Efficiency bonus: -10% to -30% power consumption
+  - Performance penalty: Complex designs = +15% power
+  - Area penalty: Wide designs need more space
+- **Examples**:
+  - "Efficiency Core": Smaller, lower IPC, very low power
+  - "Performance Core": Larger, high IPC, high power
+  - "Balanced Core": Middle ground
+
+#### Custom GPU SM/CU Designer
+- **Fixed Size**: Predetermined dimensions
+- **Compute Parameters**:
+  - CUDA cores / Stream processors count
+  - Texture unit count
+  - RT cores / Tensor cores (optional)
+  - Clock speed multiplier
+  - Memory bandwidth requirement
+- **Bonuses/Penalties**:
+  - Compute density: More FLOPs per mm²
+  - Power efficiency: Lower power per FLOP
+  - Complexity penalty: Advanced features = higher power
+- **Examples**:
+  - "Compute SM": Dense compute, minimal graphics
+  - "Graphics SM": Balanced for rendering
+  - "RT-Enhanced SM": Ray tracing acceleration
+
+#### Component Library
+- Save custom components with names/descriptions
+- Clone and modify existing designs
+- Import/export component definitions
+- Filter by type (CPU cores, GPU units, cache, etc.)
+- Performance comparison view (custom vs generic)
+
+#### Integration with Die Designer
+- Component palette shows both generic and custom components
+- Generic components: Size-based stats (current system)
+- Custom components: Fixed size with predetermined stats
+- Visual indicator (icon/badge) for custom components
+- Tooltip shows bonuses/penalties
+
+**Technical Implementation**:
+- Store custom components in localStorage
+- JSON schema for component definitions
+- Stats override system in performance calculator
+- Bonus/penalty multipliers applied to base calculations
+
+**UI Screens**:
+- Component library view (similar to die library)
+- Component designer canvas (parameter sliders/inputs)
+- Real-time stat preview
+- "Use in Die Designer" button
+
+---
+
+### Phase 8: Architecture Enhancements ❌ NOT STARTED
 
 #### A. IPC Calculation System
 **Reference**: FEATURES.md: Advanced IPC Calculation System
@@ -208,7 +315,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 7: Memory & Storage Chips ❌ NOT STARTED
+### Phase 9: Memory & Storage Chips ❌ NOT STARTED
 **Reference**: FEATURES.md: Memory & Storage Chip Design
 
 **Goals**:
@@ -226,7 +333,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 8: Board-Level Design ❌ NOT STARTED
+### Phase 10: Board-Level Design ❌ NOT STARTED
 **Reference**: FEATURES.md: Board-Level Design
 
 #### A. Motherboard Design
@@ -256,7 +363,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 9: Business Models & Contracts ❌ NOT STARTED
+### Phase 11: Business Models & Contracts ❌ NOT STARTED
 **Reference**: FEATURES.md: Business Models
 
 **Goals**:
@@ -275,7 +382,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 10: System Integration & OEM ❌ NOT STARTED
+### Phase 12: System Integration & OEM ❌ NOT STARTED
 **Reference**: FEATURES.md: System Integration & OEM
 
 **Goals**:
@@ -296,7 +403,7 @@ This document provides a high-level project management view of Silicon Tycoon de
 
 ---
 
-### Phase 11: Integration & Polish ❌ NOT STARTED
+### Phase 13: Integration & Polish ❌ NOT STARTED
 
 **Goals**:
 - ❌ Connect all phases data flow (Architecture→Wafer→Fab→Binning→Packaging→Market)
